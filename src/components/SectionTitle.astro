@@ -3,7 +3,7 @@ import { folio, nav } from '../data/portfolio';
 interface Props { title: string; id: (typeof nav)[number]['id']; label: string }
 const {title, id, label} = Astro.props;
 ---
-<div class="section-title"><h2 id={`${id}-title`}>{title}</h2><span class="section-index mono" aria-hidden="true"><i></i>{folio(nav.findIndex(n => n.id === id) + 1)} <b>/</b> {label}</span></div>
+<div class="section-title"><h2 id={id} tabindex="-1">{title}</h2><span class="section-index mono" aria-hidden="true"><i></i>{folio(nav.findIndex(n => n.id === id) + 1)} <b>/</b> {label}</span></div>
 <style>
 .section-title { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-4); }
 .section-index { color: var(--muted); display: inline-flex; align-items: center; gap: var(--s-2); white-space: nowrap; }

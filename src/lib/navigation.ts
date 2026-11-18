@@ -4,7 +4,8 @@ const system = matchMedia('(prefers-color-scheme: dark)');
 function theme(dark: boolean) {
   root.dataset.theme = root.dataset.tone = dark ? 'dark' : 'light';
   toggle?.setAttribute('aria-checked', String(dark));
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', getComputedStyle(root).getPropertyValue('--p-bg').trim());
+  const chrome = getComputedStyle(root).getPropertyValue(dark ? '--night' : '--white').trim();
+  document.querySelectorAll('meta[name="theme-color"]').forEach(meta => meta.setAttribute('content',chrome));
 }
 theme(root.dataset.theme === 'dark');
 toggle?.addEventListener('click', () => {
@@ -63,17 +64,17 @@ if (header && menuButton) {
     setMenu(false);
     if (a.pathname === location.pathname && a.hash) {
       const dest = document.getElementById(a.hash.slice(1));
-      if (dest) { dest.tabIndex = -1; dest.focus({ preventScroll: true }); }
+      dest?.focus({ preventScroll: true });
     }
   });
 }
 const links = [...document.querySelectorAll<HTMLAnchorElement>('.nav__link[href^="#"]')];
-const sections = links.map(link => document.getElementById(link.hash.slice(1))).filter((s): s is HTMLElement => !!s);
+const sections = links.map(link => document.getElementById(`${link.hash.slice(1)}-section`)).filter((s): s is HTMLElement => !!s);
 if (sections.length) {
   const io = new IntersectionObserver(entries => {
     const now = entries.filter(e => e.isIntersecting).at(-1);
     if (now) links.forEach(a => {
-      if (a.hash === `#${now.target.id}`) a.setAttribute('aria-current', 'location');
+      if (`${a.hash}-section` === `#${now.target.id}`) a.setAttribute('aria-current', 'location');
       else a.removeAttribute('aria-current');
     });
   }, { rootMargin: '-12% 0px -62% 0px', threshold: 0 });

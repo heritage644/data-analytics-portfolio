@@ -1,0 +1,21 @@
+---
+import { Image, getImage } from 'astro:assets';
+import { copy, type Project, type Screenshot } from '../data/portfolio';
+import { imageSource } from '../lib/images';
+import Thumbnail from './Thumbnail.astro';
+import Icon from './Icon.astro';
+interface Props { project: Project }
+const { project } = Astro.props;
+const images = await Promise.all([project.image, ...project.additionalImages].filter((view): view is Screenshot => !!view).map(async view => {
+  const original = imageSource(view.file);
+  const full = await getImage({src: original, width:original.width, format:'webp', quality:90});
+  return {view, original, url:full.src};
+}));
+---
+{images.length ? <div class="study-gallery" role="group" aria-label={copy.ui.gallery}>
+  {images.map(({view,original,url},i) => <a class="gallery-view" data-enlarge={view.name} data-width={original.width} data-height={original.height} href={url} aria-label={`${copy.ui.enlarge}: ${view.name}`}>
+    <Image src={original} alt={view.alt} format="webp" quality={90} widths={[360, 600, 840, original.width]}
+      sizes={i === 0 ? '(max-width:700px) 90vw, (max-width:1023px) 85vw, 860px' : '(max-width:700px) 90vw, 420px'} loading="lazy" decoding="async" />
+    <span class="expand-mark" aria-hidden="true"><Icon name="maximize-2" /></span>
+  </a>)}
+</div> : <Thumbnail project={project} />}

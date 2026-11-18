@@ -1,41 +1,60 @@
-/* Unchanged light palette and type deal: stone-blueprint / schibsted, soft. */
+/* Portfolio brand. Keep literal brand colours here: CSS, favicon, browser chrome
+   and the build-time sharing image all read these same swatches. */
 :root {
-  --p-bg: #dfdedb; --p-surface: #d3d2ce; --p-ink: #26251e; --p-muted: #5a5850;
-  --p-accent: #2456d6; --p-accent-ink: #ffffff; --p-action: #2456d6; --p-action-ink: #ffffff;
-  --p-inv-bg: #26251e; --p-inv-surface: #313029; --p-inv-ink: #dfdedb; --p-inv-muted: #9e9d99;
-  --p-inv-accent: #dfdedb; --p-inv-accent-ink: #26251e; --p-inv-action: #dfdedb; --p-inv-action-ink: #26251e;
-  --font-display: "Schibsted Grotesk", system-ui, sans-serif;
-  --font-text: "Schibsted Grotesk", system-ui, sans-serif;
-  --display-weight: 400;
-  --display-tracking: -0.035em;
-  --display-tracking-xl: -0.042em;
-  --ly-scale: 0.98;
-}
-:root {
-  /* Paper, grid and folded faces are tints of the same blueprint ink. */
-  --paper: #f7f7f3; --white: #ffffff; --blue: #2456d6; --blue-deep: #183c96;
-  --blue-side: #3164e7; --blue-top: #87a9ff; --blue-mid: #618ef4; --blue-tint: #cddcff;
-  --blue-wash: #e6edfb; --draft-ink: #1c3767; --draft-line: #a1b5d6; --draft-grid: #d8dfeb;
-  --drawing-bg: #eff3fa; --drawing-label: #40516e; --sheet: #f9fbff; --sheet-edge: #b9ccec;
-  --band: #222723; --band-surface: #2c322e; --band-ink: #f4f4ef; --band-muted: #b9c1bc;
-  --veil: rgb(19 24 36 / 58%); --focus: var(--action);
-  color-scheme: light;
-}
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --p-bg: #20231f; --p-surface: #2b2e29; --p-ink: #f0f0e9; --p-muted: #b1b4aa;
-  --p-accent: #9ebaff; --p-action: #9ebaff; --p-accent-ink: #12213c; --p-action-ink: #12213c;
-  --paper: #282c26; --band: #191c19; --band-surface: #222622;
-  --drawing-bg: #202b3b; --drawing-label: #c0cfe7; --draft-grid: #344257; --draft-line: #5f779a;
-}
+  color-scheme: light dark;
+  --red: #DC2626;
+  --red-hover: #B91C1C;
+  --red-pressed: #991B1B;
+  --red-soft: #FEF2F2;
+  --red-soft-strong: #FEE2E2;
+  --red-lift: #FF8585;
+  --red-night-tint: #301818;
+  --red-night-tint-strong: #462222;
+  --white: #FFFFFF;
+  --mist: #F8F8F8;
+  --charcoal: #111111;
+  --secondary: #5F5F5F;
+  --border: #E5E5E5;
+  --night: #0B0B0B;
+  --raised: #161616;
+  --night-line: #383838;
+  --night-muted: #BDBDBD;
 
-/* System dark theme also works when JavaScript is disabled. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-  color-scheme: dark;
-  --p-bg: #20231f; --p-surface: #2b2e29; --p-ink: #f0f0e9; --p-muted: #b1b4aa;
-  --p-accent: #9ebaff; --p-action: #9ebaff; --p-accent-ink: #12213c; --p-action-ink: #12213c;
-  --paper: #282c26; --band: #191c19; --band-surface: #222622;
-  --drawing-bg: #202b3b; --drawing-label: #c0cfe7; --draft-grid: #344257; --draft-line: #5f779a;
-  }
+  --p-bg: light-dark(var(--white),var(--night));
+  --p-surface: light-dark(var(--mist),var(--raised));
+  --p-ink: light-dark(var(--charcoal),var(--mist));
+  --p-muted: light-dark(var(--secondary),var(--night-muted));
+  --p-accent: light-dark(var(--red),var(--red-lift));
+  --p-accent-ink: light-dark(var(--white),var(--night));
+  --p-action: light-dark(var(--red-hover),var(--red-lift));
+  --p-action-ink: var(--p-accent-ink);
+  --p-inv-bg: var(--charcoal); --p-inv-surface: var(--raised);
+  --p-inv-ink: var(--mist); --p-inv-muted: var(--night-muted);
+  --p-inv-accent: var(--red-lift); --p-inv-action: var(--red-lift);
+  --p-inv-accent-ink: var(--night); --p-inv-action-ink: var(--night);
+  --line: light-dark(var(--border),var(--night-line));
+  --line-strong: color-mix(in srgb,var(--p-ink) 23%,var(--p-bg));
+  --paper: light-dark(var(--white),var(--raised));
+  --chip: light-dark(var(--red-soft),var(--red-night-tint));
+  --chip-edge: light-dark(var(--red-soft-strong),var(--red-night-tint-strong));
+  --band: var(--p-inv-bg); --band-surface: var(--p-inv-surface);
+  --band-ink: var(--p-inv-ink); --band-muted: var(--p-inv-muted);
+  --focus: var(--p-accent);
+  --veil: color-mix(in srgb,var(--night) 76%,transparent);
+
+  /* Illustration geometry: paper, registration lines and the faces of the columns. */
+  --drawing-bg: var(--p-surface); --drawing-label: var(--p-muted);
+  --draft-grid: var(--line); --draft-line: color-mix(in srgb,var(--p-ink) 32%,var(--p-surface));
+  --draft-ink: var(--red-pressed); --sheet: var(--white); --sheet-edge: var(--red-soft-strong);
+  --chart-side: var(--red); --chart-deep: var(--red-pressed);
+  --chart-top: color-mix(in srgb,var(--red) 48%,var(--white));
+  --chart-mid: color-mix(in srgb,var(--red) 72%,var(--white));
+  --chart-tint: var(--red-soft-strong); --chart-wash: var(--red-soft);
+
+  --font-display: 'Schibsted Grotesk', system-ui, sans-serif;
+  --font-text: 'Schibsted Grotesk', system-ui, sans-serif;
+  --display-weight: 400; --display-tracking: -.035em;
+  --display-tracking-xl: -.042em; --ly-scale: .98;
 }
+:root[data-theme='light'] { color-scheme: light; }
+:root[data-theme='dark'] { color-scheme: dark; }

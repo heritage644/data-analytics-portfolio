@@ -12,6 +12,6 @@ const source = profile.icon === 'fiverr' ? 'brand/fiverr.svg' : `assets/icons/${
 <style is:global>
 .social-link img { width: 18px; height: 18px; object-fit: contain; }
 .social-fiverr.btn--primary img { filter: brightness(0) invert(1); }
-[data-theme='dark'] .social-link:is(.social-x,.social-fiverr):not(.btn--primary) img { filter: brightness(0) invert(1); }
-[data-theme='dark'] .social-fiverr.btn--primary img { filter: brightness(0); }
+[data-theme='dark'] .social-link:not(.btn--primary) img { filter: brightness(0) invert(1); }
+@media (prefers-color-scheme:dark) { :root:not([data-theme]) .social-link:not(.btn--primary) img {filter:brightness(0) invert(1);} }
 </style>
