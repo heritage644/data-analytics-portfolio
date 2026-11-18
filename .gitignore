@@ -1,0 +1,11 @@
+node_modules/
+.astro/
+dist/
+.cache/
+.taste-skill/*
+!.taste-skill/waivers.json
+.env
+.env.local
+.DS_Store
+public/assets/
+public/fonts/

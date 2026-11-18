@@ -1,0 +1,98 @@
+---
+import { person, copy, coreTools } from '../data/portfolio';
+import { hasAsset, local } from '../lib/paths';
+import DataSculpture from './DataSculpture.astro';
+import ToolBadge from './ToolBadge.astro';
+import Icon from './Icon.astro';
+const hasPortrait = hasAsset(person.headshot);
+---
+<section class="hero hero--split portfolio-hero" id="overview" data-enter aria-labelledby="hero-title">
+  <div class="wrap">
+    <div class="hero-text hero__grid grid">
+      <div class="hero__text span-6">
+        <div class="hero__kicker">
+          <!-- TODO: Add Raphael's own portrait at public/headshot.webp. Never substitute a stock portrait. -->
+          <span class="portrait" title={hasPortrait ? undefined : copy.ui.headshotSlot}>{hasPortrait ? <img src={local(person.headshot)} width="40" height="40" alt={person.name} /> : <span role="img" aria-label={copy.ui.headshotSlot}>{person.initials}</span>}</span>
+          {copy.greeting}
+        </div>
+        <h1 id="hero-title" data-enter-whole>{copy.headline[0]}{' '}<br />{copy.headline[1]}<span class="accent-word">{copy.headline[2]}</span></h1>
+        <p class="hero__lead">{copy.lead}</p>
+        <div class="btn-row"><a class="btn btn--primary" href="#projects">{copy.primary}<Icon name="arrow-down-right" /></a><a class="btn btn--secondary" href="#contact">{copy.connect}<Icon name="arrow-up-right" /></a></div>
+        <div class="tools-row hero-tools" aria-label={copy.toolkit}><span class="tool-label mono">{copy.toolkit}</span>{coreTools.map(t=><ToolBadge name={t.name} eager />)}</div>
+      </div>
+      <div class="hero__media workspace span-6 start-7" data-visual role="img" aria-label={copy.illustrationAlt}>
+        <div class="workspace-top" aria-hidden="true"><span><Icon name="panel-top" />{copy.workspace}</span><span class="mono"><span class="study-type">{copy.study}</span><span class="fig-id">{copy.figure}</span></span></div>
+        <div class="drawing-space"><DataSculpture /></div>
+        <div class="workspace-bottom mono" aria-hidden="true"><span class="plate-ruler"></span><span class="ink-key"><i></i><i></i><i></i><i></i><i></i></span></div>
+      </div>
+    </div>
+    <div class="folio-foot"><span><span class="edu-long">{person.education}</span><span class="edu-short">{person.university}</span><Icon name="graduation-cap" /></span><a href="#about" class="m-link scroll-cue" aria-label={copy.scroll}><span>{copy.scroll}</span><Icon name="arrow-down" /></a></div>
+  </div>
+</section>
+<style is:global>
+  main > .portfolio-hero { --hgap: clamp(48px,8svh,96px); --hpadb: 24px; background: var(--p-bg); }
+  .portfolio-hero > .wrap { justify-content: space-between; gap: var(--s-6); }
+  .portfolio-hero .hero-text.hero__grid { height: auto; flex: 1 1 0; min-height: 0; align-content: start; grid-template-rows: auto; }
+  .portfolio-hero .hero__text { padding-block: 0; }
+  .portfolio-hero .hero__kicker { font-size: var(--t-body); gap: var(--s-3); color: var(--ink); }
+  .portrait { position: relative; flex: none; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--paper); border: 1px solid var(--line-strong); }
+  .portrait > span { display: grid; place-items: center; width: 30px; height: 30px; border: 1px dashed var(--draft-line); border-radius: 50%; color: var(--muted); font: 500 var(--t-label)/1 var(--font-text); letter-spacing: -.06em; }
+  .portrait img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+  .portfolio-hero h1 { font-size: clamp(52px,5.1vw,80px); line-height: 1.00; text-wrap: initial; }
+  .portfolio-hero .hero__text > .hero__kicker + h1 { margin-top: var(--s-6); }
+  .accent-word { color: var(--accent); }
+  .portfolio-hero .hero__lead { max-width: 47ch; font-size: clamp(16px,1.25vw,19px); line-height: 1.62; }
+  .hero-tools { margin-top: var(--s-7); border-top: 1px solid var(--line-strong); padding-top: var(--s-5); }
+  .hero-tools .tool-label { margin-right: var(--s-2); color: var(--muted); }
+  .hero--split .workspace { height: clamp(420px,59svh,600px); min-height: 0; display: flex; flex-flow: column; align-self: start; background: var(--drawing-bg); border: 1px solid var(--draft-line); color: var(--drawing-label); }
+  .workspace-top,.workspace-bottom { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; padding: var(--s-4) var(--s-5); }
+  .workspace-top { border-bottom: 1px solid var(--draft-grid); }
+  .workspace-top > span,.workspace-bottom > span { display: inline-flex; align-items: center; gap: var(--s-2); }
+  .workspace-top > span:first-child { color: var(--drawing-label); font-size: var(--t-small); font-weight: 500; }
+  .fig-id { padding: 3px 8px; border: 1px solid var(--draft-line); border-radius: 4px; }
+  .workspace-bottom { border-top: 1px solid var(--draft-grid); padding-block: var(--s-3); }
+  .drawing-space { min-height: 0; flex: 1; display: grid; place-items: center; position: relative; }
+  .drawing-space::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(var(--draft-grid) .5px,transparent .5px),linear-gradient(90deg,var(--draft-grid) .5px,transparent .5px); background-size: 20px 20px; opacity: .6; }
+  .sculpture { position: relative; display: block; width: 100%; height: 100%; }
+  .mini-cross { position: relative; width: 10px; height: 10px; display: inline-block; }
+  .mini-cross::before,.mini-cross::after { position: absolute; content: ''; background: currentColor; }
+  .mini-cross::before { width: 100%; height: 1px; top: 50%; }.mini-cross::after { height: 100%; width: 1px; left: 50%; }
+  .workspace-bottom .ink-key { gap: 3px; }.ink-key i { display: block; width: 11px; height: 11px; background: var(--sheet); border: 1px solid var(--draft-line); }.ink-key i:nth-child(2){background: var(--blue-tint)}.ink-key i:nth-child(3){background: var(--blue-top)}.ink-key i:nth-child(4){background: var(--blue)}.ink-key i:nth-child(5){background: var(--draft-ink)}
+  .folio-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); padding-top: var(--s-3); border-top: 1px solid var(--line-strong); font-size: var(--t-small); color: var(--muted); }
+  .folio-foot > * { display: inline-flex; align-items: center; gap: var(--s-2); }
+  .folio-foot .edu-short { display:none; }
+  .folio-foot a { min-height: 44px; color: var(--ink); }
+  @media (1024px <= width < 1280px) { .portfolio-hero .hero__text { grid-column: 1 / span 6; }.portfolio-hero h1 { font-size: clamp(49px,5.35vw,70px); }.hero-tools .tool-label { display: none; } }
+  @media (max-width: 1023px) {
+    main > .portfolio-hero { --hgap: 32px; }
+    .portfolio-hero .hero__grid { gap: 0; }
+    .portfolio-hero .hero__text { padding: 0; }
+    .portfolio-hero .hero__kicker + h1 { margin-top: var(--s-4) !important; }
+    .portfolio-hero .hero__lead { max-width: 62ch; margin-top: var(--s-4); }
+    .hero-tools { margin-top: var(--s-5); border: 0; padding-top: 0; }
+    .hero--split .workspace { flex: 1 1 0; min-height: 200px; width: 100%; margin-block-start: var(--s-5); }
+    .portfolio-hero .hero__text > .btn-row { margin-top: var(--s-5); }
+    .portfolio-hero > .wrap { gap: var(--s-4); }
+  }
+  @media (max-width: 639px) {
+    main > .portfolio-hero { --hgap: 24px; --hpadb: 24px; min-height: max(740px,100svh); }
+    .portfolio-hero h1 { font-size: clamp(42px,11.5vw,62px); }
+    .portfolio-hero .hero__kicker { font-size: var(--t-small); }
+    .portrait { width: 32px; height: 32px; }.portrait > span { width: 25px; height: 25px; }
+    .portfolio-hero .hero__lead { line-height: 1.54; }
+    .portfolio-hero .hero__text > .btn-row { gap: var(--s-2); flex-direction: row; }
+    .portfolio-hero .btn-row .btn { width: auto; flex: 1; padding-inline: var(--s-2); font-size: var(--t-small); }
+    .hero-tools { margin-top: var(--s-4); }.hero-tools .tool-label { display: none; }
+    .workspace-top, .workspace-bottom { padding: 8px 14px; }
+    .workspace-top > span:first-child { font-size: var(--t-label); }
+    .hero--split .workspace { min-height: 202px; }
+    .folio-foot .edu-long {display:none;}.folio-foot .edu-short {display:inline;}.folio-foot {flex:none;}
+    .folio-foot { align-items: center; font-size: var(--t-label); padding-top: var(--s-2); }
+    .folio-foot span { max-width: 30ch; line-height: 1.4; }
+    .folio-foot a { width: 44px; justify-content: center; flex-shrink: 0; }
+    .folio-foot a .ui-icon { width: 18px; height: 18px; }
+  }
+  @media (min-width: 1024px) and (max-height: 740px) { main > .portfolio-hero { --hgap: 32px; min-height: 660px; }.hero-tools { margin-top: var(--s-5); padding-top: var(--s-4); }.portfolio-hero h1 { font-size: clamp(49px,5vw,68px); } }
+  .plate-ruler { width:56px;height:9px;background:repeating-linear-gradient(90deg,var(--draft-line) 0 1px,transparent 1px 6px);border-bottom:1px solid var(--draft-line); }
+  @media(max-width:639px) { .workspace-top .fig-id {display:none;}.workspace .workspace-bottom {padding-block:8px;}.folio-foot .scroll-cue > span:first-child {display:none;} }
+</style>

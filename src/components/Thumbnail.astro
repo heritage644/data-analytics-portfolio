@@ -1,0 +1,41 @@
+---
+import { copy, type Project } from '../data/portfolio';
+import { hasAsset, local } from '../lib/paths';
+interface Props { project: Project; eager?: boolean }
+const {project: p, eager = false} = Astro.props;
+const kind = p.illustration;
+const corners = [[12,12],[408,12],[408,208],[12,208]];
+---
+<div class:list={['thumbnail', `plate-${kind}`, {'has-screenshot':hasAsset(p.image)}]}>
+  {/* TODO: The real image for this individual slot is public + project.image. No speculative network requests. */}
+  {hasAsset(p.image) ? <img src={local(p.image)} alt={`${p.title} — dashboard`} width="840" height="440" loading={eager?'eager':'lazy'} decoding="async" /> : <>
+    <svg class="thumb-art" viewBox="0 0 420 220" fill="none" aria-hidden="true" focusable="false">
+      <g stroke="var(--draft-line)" stroke-width=".8">{corners.map(([x,y])=><path d={`M${x!-3} ${y}h6m-3-3v6`}/>)}</g>
+      {kind==='columns' && <g transform="translate(69 112)" stroke="var(--draft-ink)" stroke-width="1.1" stroke-linejoin="round">
+        {[32,50,39,75,66,108,126].map((h,i)=>{const x=i*31, y=16+i*5;return <g>
+          <path d={`M${x} ${y}l20 9 0 ${-h}-20-9z`} fill="var(--blue-side)"/>
+          <path d={`M${x+20} ${y+9}l19-9 0 ${-h}-19 9z`} fill="var(--blue-deep)"/>
+          <path d={`M${x} ${y-h}l19-9 20 9-19 9z`} fill="var(--blue-top)"/>
+        </g>})}
+      </g>}
+      {kind==='rings' && <g transform="translate(210 85) rotate(-16)" stroke="var(--draft-ink)">
+        {[44,22,0].map((y,i)=><g transform={`translate(0 ${y})`}><ellipse rx="88" ry="39" fill={i===2?'var(--blue-side)':'var(--sheet-edge)'}/><ellipse cy="-7" rx="88" ry="39" fill={i===2?'var(--blue-top)':'var(--sheet)'}/><ellipse cy="-7" rx="45" ry="20" fill={i===2?'var(--blue-deep)':'var(--blue-tint)'}/><path d="M-86-14l43 6m66-16 27-16"/></g>)}
+      </g>}
+      {kind==='layers' && <g transform="translate(72 40)" stroke-linejoin="round" stroke="var(--draft-ink)">
+        {[0,1,2,3,4,5].map(i=><path d={`M${i*5} ${60+i*10}l38-21 36 7 39-40 39 12 33-34 24 11 35-25v54l-36 22-25-8-33 26-36-8-37 33-35-6-42 24z`} fill={i===0?'var(--blue-mid)':i===5?'var(--blue-side)':'var(--blue-tint)'}/>)}
+      </g>}
+      {kind==='wave' && <g transform="translate(62 102)" stroke-linecap="round" stroke-linejoin="round">{Array.from({length:13},(_,i)=><path transform={`translate(${i*1.2} ${i*3})`} d="M0 15q24 0 39-9t31 1l23 2 28-30 22 38 26-76 23 58 23-14 16 13q16 9 40-7" stroke={i%4===0?'var(--blue-deep)':'var(--blue-mid)'} stroke-width={i%4===0?2.2:1}/>)}</g>}
+      {kind==='terraces' && <g transform="translate(208 118)" stroke="var(--draft-ink)" stroke-linejoin="round">
+        {[0,1,2,3,4].map(i=>{const w=113-i*18,h=w*.42,y=29-i*17;return <g><path d={`M${-w} ${y}l${w} ${h} ${w} ${-h}v-7l${-w} ${h} ${-w} ${-h}z`} fill="var(--blue-deep)"/><path d={`M${-w} ${y-7}l${w} ${-h} ${w} ${h}-${w} ${h}z`} fill={i%2?'var(--sheet)':'var(--blue-top)'}/></g>})}
+      </g>}
+      {kind==='nodes' && <g transform="translate(210 89)" stroke="var(--drawing-label)" stroke-width="1.4" stroke-dasharray="5 4">{[0,1,2].map(i=><g transform={`translate(${(i-1)*68} ${i%2*24})`}><path d="m0-39 38 18v46L0 44l-38-19v-46z M-38-21 0-2l38-19M0-2v46"/>{[[0,-39],[38,-21],[0,-2],[-38,-21],[-38,25],[38,25],[0,44]].map(([cx,cy])=><circle cx={cx} cy={cy} r="3.5" fill="var(--sheet)" stroke-dasharray="none"/>)}</g>)}</g>}
+    </svg>
+    <span class="preview-label mono">{copy.preview}</span>
+  </>}
+</div>
+<style is:global>
+.thumbnail { aspect-ratio: 21 / 11; width: 100%; overflow: clip; position: relative; background-color: var(--drawing-bg); background-image: radial-gradient(var(--draft-line) .65px,transparent .8px); background-size: 14px 14px; }
+.thumb-art,.thumbnail > img { width: 100%; height: 100%; display: block; }.thumbnail > img { object-fit: contain; }
+.preview-label { position: absolute; bottom: var(--s-3); left: var(--s-4); border: 1px solid var(--draft-grid); border-radius: 4px; background: var(--drawing-bg); color: var(--drawing-label); padding: 3px 7px; font-size: var(--t-label); line-height: 1.3; }
+.plate-nodes:not(.has-screenshot) { background-image: none; background-color: var(--paper); }
+</style>

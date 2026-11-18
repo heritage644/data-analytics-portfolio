@@ -1,0 +1,18 @@
+---
+import { copy, type Project } from '../data/portfolio';
+import { configuredLink } from '../lib/paths';
+import Icon from './Icon.astro';
+interface Props { project: Project; compact?: boolean }
+const { project, compact = false } = Astro.props;
+const { dashboardUrl, reportUrl } = project;
+const externalReport = reportUrl != null && /^https?:\/\//i.test(reportUrl);
+---
+{(dashboardUrl || reportUrl) && <div class={compact ? 'card-resources' : 'btn-row study-resources'} role="group" aria-label={copy.ui.resources}>
+  {dashboardUrl && <a class={compact ? 'resource-link' : 'btn btn--primary'} href={configuredLink(dashboardUrl)} target="_blank" rel="noopener noreferrer">{copy.dashboard}<Icon name="external-link" /></a>}
+  {reportUrl && <a class={compact ? 'resource-link' : 'btn btn--secondary'} href={configuredLink(reportUrl)} download target={externalReport ? '_blank' : undefined} rel={externalReport ? 'noopener noreferrer' : undefined}>{copy.report}<Icon name="download" /></a>}
+</div>}
+<style>
+  /* Keep optional secondary links above the case-study link's transparent card-sized target. */
+  .card-resources { display:flex; flex-wrap:wrap; gap:0 var(--s-4); }
+  .resource-link { position:relative; z-index:1; display:inline-flex; align-items:center; gap:var(--s-2); min-height:44px; font-size:var(--t-small); color:var(--action); text-decoration:underline; text-underline-offset:.24em; }
+</style>

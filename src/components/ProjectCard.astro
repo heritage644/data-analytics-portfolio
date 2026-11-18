@@ -1,0 +1,35 @@
+---
+import { copy, folio, projectLabels, type Project } from '../data/portfolio';
+import { projectHref } from '../lib/paths';
+import Icon from './Icon.astro';
+import Thumbnail from './Thumbnail.astro';
+import ToolBadge from './ToolBadge.astro';
+import ProjectResources from './ProjectResources.astro';
+interface Props { project: Project; number: number }
+const {project: p, number} = Astro.props;
+---
+<article class:list={['card','project-card',{'is-planned':p.status==='in-progress'}]} data-project data-labels={JSON.stringify(projectLabels(p))}>
+  <Thumbnail project={p} />
+  <div class="project-info"><div class="project-meta"><span class="industry-badge" >{p.industry}</span><span class="mono">{p.status==='in-progress' ? <span class="planned-badge">{copy.inProgress}</span> : `${copy.caseStudy} / ${folio(number)}`}</span></div>
+    <h3>{p.title}</h3><p class="card-overview">{p.excerpt}</p>
+    <div class="tools-row">{p.tools.map(t=><ToolBadge name={t} full />)}</div>
+    {p.note && <p class="record-note"><Icon name="info" />{p.note}</p>}
+    <div class="project-action"><a class="case-link" data-study-link href={projectHref(p.slug)}>{copy.viewCase}<span class="sr-only">: {p.title}</span><Icon name="arrow-up-right" /></a><ProjectResources project={p} compact /></div>
+  </div>
+</article>
+<style is:global>
+.card.project-card { min-width: 0; position: relative; display: flex; flex-direction: column; gap: 0; border: 1px solid var(--line-strong); padding: 0; border-radius: var(--r-lg); background: var(--paper); overflow: clip; color: var(--ink); }
+.project-card .thumbnail { border-bottom: 1px solid var(--line); flex: none; }
+.project-info { display: flex; flex: 1; flex-direction: column; align-items: flex-start; padding: var(--s-5); gap: var(--s-4); }
+.project-meta { width: 100%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--s-2); color: var(--muted); }
+.project-card h3 { font: var(--display-weight) clamp(22px,1.65vw,26px)/1.17 var(--font-display); letter-spacing: var(--display-tracking); margin: 0; }
+.card-overview { min-height: 3.16em; line-height: 1.58; font-size: var(--t-body); }
+.project-card .kit-badge { background: transparent; border-color: var(--line-strong); padding: 4px 7px; border-radius: 5px; }
+.project-card .kit-badge img { width: 16px; height: 16px; }
+.project-action { margin-top: auto; padding-top: var(--s-2); border-top: 1px solid var(--line); width: 100%; }
+.case-link { display: inline-flex; align-items: center; gap: var(--s-2); min-height: 44px; color: var(--action); font-size: var(--t-small); font-weight: 500; }
+.card.project-card:focus-within { outline: 2px solid var(--action); outline-offset: 3px; }
+.is-planned .project-info { background: color-mix(in srgb,var(--paper) 66%,var(--bg)); }
+.case-link::after {content:'';position:absolute;inset:0;border-radius:var(--r-lg);}
+.project-card:hover .case-link {text-decoration:underline;text-underline-offset:.24em;}
+</style>

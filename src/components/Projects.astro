@@ -1,0 +1,59 @@
+---
+import { copy, filters, projects, folio } from '../data/portfolio';
+import SectionTitle from './SectionTitle.astro';
+import ProjectCard from './ProjectCard.astro';
+import Icon from './Icon.astro';
+---
+<section class="section projects-section" id="projects" aria-labelledby="projects-title">
+  <div class="wrap">
+    <SectionTitle title={copy.projects} label={copy.ui.work} id="projects" />
+    <p class="projects-intro">{copy.projectIntro}</p>
+    <div class="filter-row" data-filters data-all={copy.ui.all} data-one={copy.ui.projectSingular} data-many={copy.ui.projectUnit} data-shown={copy.ui.shown} hidden>
+      <div class="filter-group" role="group" aria-label={copy.ui.filter}><Icon name="filter" />{filters.map((f,i)=><button type="button" class="filter" data-filter={f} aria-pressed={String(i===0) as 'true' | 'false'} aria-controls="project-grid">{f}</button>)}</div>
+      <span class="mono filter-count" aria-hidden="true"><span data-result-number>{folio(projects.length)}</span> / {folio(projects.length)}</span>
+    </div>
+    <p class="sr-only" aria-live="polite" data-results-status></p>
+    <div class="project-grid" id="project-grid">{projects.map((p,i)=><ProjectCard project={p} number={i+1} />)}</div>
+  </div>
+</section>
+<script>
+  const section = document.querySelector<HTMLElement>('#projects');
+  const row = section?.querySelector<HTMLElement>('[data-filters]');
+  if (section && row) {
+    const buttons = [...row.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+    const cards = [...section.querySelectorAll<HTMLElement>('[data-project]')].map(el => ({el, labels: JSON.parse(el.dataset.labels!) as string[]}));
+    row.hidden = false;
+    for (const button of buttons) button.addEventListener('click', () => {
+      const label = button.dataset.filter!;
+      if (button.getAttribute('aria-pressed') === 'true') return;
+      buttons.forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+      let visible = 0;
+      for (const {el, labels} of cards) {
+        el.hidden = label !== row.dataset.all && !labels.includes(label);
+        if (el.hidden) continue;
+        visible++;
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) el.animate([{opacity:.5,transform:'translateY(4px)'},{opacity:1,transform:'none'}],{duration:180,easing:'ease-out'});
+      }
+      section.dataset.filtered = String(visible !== cards.length);
+      section.querySelector('[data-result-number]')!.textContent = String(visible).padStart(2,'0');
+      section.querySelector('[data-results-status]')!.textContent = `${visible} ${visible === 1 ? row.dataset.one : row.dataset.many} ${row.dataset.shown}: ${label}.`;
+    });
+  }
+</script>
+<style is:global>
+main > .projects-section { --h: 2; height: auto; min-height: calc(var(--h) * 100svh); }
+.projects-intro { margin-top: var(--s-4); max-width: 65ch; font-size: var(--t-lead); line-height: 1.55; }
+.filter-row { display: flex; justify-content: space-between; align-items: center; gap: var(--s-4); margin-top: var(--s-6); padding-block: var(--s-4); }
+.filter-group { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); }
+.filter-group > .ui-icon { color: var(--muted); margin-right: var(--s-2); }
+.filter { border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: transparent; color: var(--ink); padding: 7px 13px; font-size: var(--t-small); font-weight: 500; cursor: pointer; min-height: 36px;  }
+.filter[aria-pressed='true'] { background: var(--ink); color: var(--bg); border-color: var(--ink); }.filter:hover:not([aria-pressed='true']) { background: var(--paper); }
+.filter-count { color: var(--muted); white-space: nowrap; }
+.project-grid { margin-top: var(--s-6); display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: var(--s-5); }
+.projects-section[data-filtered='true'] { --h: 1; }
+@media(min-width:1280px) and (min-height:820px) { .projects-section:not([data-filtered='true']) .project-grid { row-gap: var(--s-8); }.projects-section:not([data-filtered='true']) .project-card { min-height: min(70svh,650px); } }
+@media(max-width:1023px) { .project-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }.filter-count { display: none; } }
+@media(max-width:639px) { .project-grid { grid-template-columns: minmax(0,1fr); gap: var(--s-5); }.filter-row { padding-block: var(--s-3); margin-top: var(--s-5); }.filter { min-height: 44px; padding-inline: 12px; }.filter-group > .ui-icon {display: none;}.projects-intro { font-size: var(--t-body); } }
+@media (640px <= width < 1280px) { .project-info {padding:var(--s-4);gap:var(--s-3);}.project-grid {row-gap:var(--s-4);column-gap:var(--gutter);} }
+@media(max-width:639px) {main > .projects-section:not([data-filtered='true']) {--hm:5;min-height:calc(5 * 100svh);} .projects-section:not([data-filtered='true']) > .wrap { min-height:calc(5 * 100svh - var(--padt) - var(--padb));}.projects-section:not([data-filtered='true']) .project-grid {flex:1;grid-auto-rows:minmax(min-content,1fr);} }
+</style>

@@ -1,0 +1,27 @@
+---
+import { copy, folio, type Project } from '../data/portfolio';
+import ProjectResources from './ProjectResources.astro';
+import '../styles/study.css';
+import Thumbnail from './Thumbnail.astro';
+import ToolBadge from './ToolBadge.astro';
+import Icon from './Icon.astro';
+interface Props { project: Project; number: number; modal?: boolean }
+const {project: p, number, modal=false} = Astro.props;
+const Heading = modal ? 'h2' : 'h1';
+const Subheading = modal ? 'h3' : 'h2';
+const intro = p.objective && p.overview.endsWith(p.objective) ? p.overview.slice(0,-p.objective.length).trim() : p.overview;
+---
+<article class="study" data-study-article>
+  <div class="study-heading"><div class="study-kicker"><span class="mono">{copy.caseStudy} / {folio(number)}</span><span class={p.status==='in-progress'?'planned-badge':'state-badge'}>{p.status==='in-progress'?copy.inProgress:copy.complete}</span></div>
+    <Heading id="study-title">{p.title}</Heading>
+    <dl class="study-facts"><div><dt>{copy.ui.sector}</dt><dd>{p.industry}</dd></div><div><dt>{copy.ui.tools}</dt><dd class="tools-row">{p.tools.map(t=><ToolBadge name={t} full />)}</dd></div></dl>
+  </div>
+  <div class="study-body">
+    <div class="study-intro"><div><Subheading>{copy.overview}</Subheading><p>{intro}</p><Subheading>{copy.objective}</Subheading><p>{p.objective}</p></div><Thumbnail project={p} eager /></div>
+    {p.note && <p class="record-note study-note"><Icon name="info" />{p.note}</p>}
+    <div class="study-block"><Subheading>{p.status==='in-progress'?copy.planned:copy.areas}</Subheading><ul class="area-list">{p.keyAreas.map(a=><li>{a}</li>)}</ul></div>
+    {p.businessQuestions.length > 0 && <div class="study-block"><Subheading>{copy.questions}</Subheading><ol class="question-list">{p.businessQuestions.map(q=><li>{q}</li>)}</ol></div>}
+    <div class="demonstrates"><Subheading><Icon name="layers" />{copy.demonstrates}</Subheading><p>{p.demonstrates}</p></div>
+    <ProjectResources project={p} />
+  </div>
+</article>

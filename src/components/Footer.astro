@@ -1,0 +1,59 @@
+---
+import { CONTACT_EMAIL, SHOW_CV, person, profiles, copy, nav } from '../data/portfolio';
+import { hasAsset, local } from '../lib/paths';
+import SectionTitle from './SectionTitle.astro';
+import SocialLink from './SocialLink.astro';
+import Icon from './Icon.astro';
+interface Props { compact?: boolean }
+const { compact = false } = Astro.props;
+const prefix = compact ? local() : '';
+const fiverr = profiles.find(p=>p.icon==='fiverr')!;
+---
+<footer id="contact" class:list={['footer', compact?'compact-footer':'closing contact-section']} aria-label={copy.ui.contact}>
+  <div class="wrap">
+    {!compact && <section class="closing__cta close--type" aria-labelledby="contact-title">
+      <SectionTitle title={copy.connect} label={copy.ui.contact} id="contact" />
+      <div class="contact-body grid"><p class="contact-copy span-6">{copy.contact}</p>
+        <span class="contact-glyph span-6 start-7" aria-hidden="true"><svg viewBox="0 0 260 135" fill="none"><g stroke="currentColor" stroke-width="1.4">{[0,1,2,3,4,5,6].map(i=><path transform={`translate(${i*7} ${-i*2})`} d="M28 121 132 17M54 17h79v79" />)}</g></svg></span>
+      </div>
+      <div class="contact-actions"><SocialLink profile={fiverr} variant="primary" />{profiles.filter(p=>p!==fiverr).map(p=><SocialLink profile={p} />)}
+        {CONTACT_EMAIL && <a class="btn btn--secondary" href={`mailto:${CONTACT_EMAIL}`}><Icon name="mail" />{copy.email}</a>}
+        {SHOW_CV && hasAsset(person.cv) && <a class="btn btn--secondary" href={local(person.cv)} download><Icon name="download" />{copy.cv}</a>}
+      </div>
+    </section>}
+    <div class="closing__links">
+      <div class="footer-top"><a class="nav__logo footer-brand" href={`${prefix}#top`}><span class="mark mark--initial" aria-hidden="true">{person.initials}</span>{person.name}</a>
+        {!compact && <nav class="footer-nav" aria-label={copy.ui.index}>{nav.map(n=><a class="m-link" href={`#${n.id}`}>{n.label}</a>)}</nav>}
+        <div class="footer-socials" aria-label={copy.ui.profileLinks}>{profiles.map(p=><SocialLink profile={p} variant="icon" />)}</div>
+      </div>
+      <div class="legal-row"><p>© <span data-year>{new Date().getFullYear()}</span> {person.name} · {person.disciplines}</p><a class="m-link" href="#top">{copy.top}<Icon name="arrow-up" /></a></div>
+      <small class="trademarks">{copy.trademarks}</small>
+    </div>
+  </div>
+</footer>
+<style is:global>
+footer.contact-section,footer.compact-footer { background: var(--paper); }
+footer.contact-section > .wrap { row-gap: var(--s-7); }
+.contact-section .closing__cta { gap: var(--s-7); }
+.contact-body { align-items: start; }
+.contact-copy { font: var(--display-weight) clamp(22px,2.4vw,34px)/1.28 var(--font-display); max-width: 33ch; letter-spacing: var(--display-tracking); }
+.contact-glyph { justify-self: stretch; text-align: right; color: var(--accent); }
+.contact-glyph svg { width: min(100%,260px); display: inline-block; }
+.contact-actions { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+.contact-actions .btn--primary { min-width: min(100%,226px); }
+.footer-top,.legal-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s-5); }
+.footer .closing__links { display: grid; gap: var(--s-5); }
+.footer-top { padding-top: var(--s-6); }
+.footer .footer-brand { display: inline-flex; align-items: center; gap: var(--s-3); }
+.footer-nav,.footer-socials { display: flex; flex-wrap:wrap; align-items: center; gap: var(--s-5); }
+.footer-socials { gap: var(--s-2); }
+.footer-nav a,.legal-row a { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--t-small); }
+.legal-row { border-top: 1px solid var(--line); padding-top: var(--s-4); }
+.legal-row p,.trademarks { color: var(--muted); font: 400 var(--t-label)/1.5 var(--font-text); }
+.legal-row a { flex: none; gap: var(--s-2); }
+.footer .trademarks { margin-top: calc(-1 * var(--s-4)); }
+.compact-footer { padding-block: var(--s-7); }
+.compact-footer .footer-top { border-top: 0; padding-top: 0; }
+@media(max-width:1023px) { .contact-glyph { display: none; }.footer-nav { gap: var(--s-4); }.contact-body { display: block; }.contact-copy { max-width: 28ch; } }
+@media(max-width:639px) { .contact-section .closing__cta { gap: var(--s-6); }.contact-actions { display: grid; grid-template-columns: 1fr 1fr; }.contact-actions .btn--primary {grid-column:1/-1;}.contact-actions .btn { padding-inline: var(--s-3); }.footer-top { flex-wrap: wrap; gap: var(--s-4); }.footer-top .footer-nav { order: 3; width: 100%; justify-content: space-between; }.footer .footer-brand { font-size: 17px; gap: var(--s-2); }.footer-brand .mark.mark--initial { width: 32px; height: 32px; font-size: 17px; }.footer-socials {gap:4px}.legal-row { align-items: flex-start; flex-wrap: wrap; gap: var(--s-2); }.footer .closing__links { gap: var(--s-4); }.footer .trademarks { margin-top: 0; } }
+</style>

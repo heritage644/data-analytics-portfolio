@@ -1,0 +1,15 @@
+---
+import Page from '../layouts/Page.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Skills from '../components/Skills.astro';
+import Projects from '../components/Projects.astro';
+import Footer from '../components/Footer.astro';
+import StudyDialog from '../components/StudyDialog.astro';
+// Dialog fragments and standalone pages use the same style sheet.
+import '../styles/study.css';
+---
+<Page home>
+  <main id="top" tabindex="-1"><Hero /><About /><Skills /><Projects /></main>
+  <Footer /><StudyDialog />
+</Page>
