@@ -1,0 +1,51 @@
+---
+import { copy, person, stats } from '../data/portfolio';
+import SectionTitle from './SectionTitle.astro';
+import Icon from './Icon.astro';
+---
+<section id="about" class="section about-section" aria-labelledby="about-title" data-moment="word-highlight">
+  <div class="wrap">
+    <SectionTitle title={copy.about} id="about" label={copy.ui.profile} />
+    <div class="grid grid--top about-body">
+      <div class="about-copy span-6"><p class="profile-title">{person.title}</p>{copy.aboutParagraphs.map(p => <p>{p}</p>)}</div>
+      <div class="about-aside span-6 start-7">
+        <blockquote class="about-quote"><span aria-hidden="true" class="quote-mark"><svg viewBox="0 0 34 25" fill="currentColor" width="29" height="24"><path d="M3 22C-2 13 2 5 12 1l1.5 3C8 7 6.5 10 7 13c5-1 8 2 7 6-1 5-7 7-11 3zm18 0c-5-9-1-17 9-21l1.5 3C26 7 24.5 10 25 13c5-1 8 2 7 6-1 5-7 7-11 3z"/></svg></span><div class="mo-wh__text" role="group">{copy.quote}</div></blockquote>
+        <aside class="card m-nolift objective-card"><div><Icon name="target" /><h3>{copy.objectiveHeading}</h3></div><p>{copy.careerObjective}</p></aside>
+      </div>
+    </div>
+    <dl class="stat-strip">{stats.map(s=><div><dt><Icon name={s.icon}/>{s.label}</dt><dd><span aria-hidden="true" data-m-count="720">{s.value}</span><span class="sr-only">{s.value}</span></dd></div>)}</dl>
+  </div>
+</section>
+<style is:global>
+.about-section { background: var(--paper); }
+.about-body { margin-top: var(--head-gap); }
+.about-copy { display: grid; gap: var(--s-4); max-width: 64ch; }
+.about-copy p,.objective-card p { font-size: var(--t-body); line-height: 1.62; }
+.about-copy .profile-title { color: var(--action); font-size: var(--t-small); font-weight: 500; }
+.about-aside { display: grid; gap: var(--s-6); justify-self: stretch; }
+.about-quote { margin: 0; padding: 0; }
+.quote-mark { display: block; height: 40px; color: var(--accent); font: 400 64px/.95 var(--font-display); }
+.about-quote .mo-wh__text { margin: 0; font: 400 clamp(26px,2.6vw,37px)/1.15 var(--font-display); letter-spacing: var(--display-tracking); max-width: 22ch; }
+.objective-card { padding: var(--s-6); border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--p-bg); }
+.objective-card > div { display: flex; align-items: center; gap: var(--s-3); margin-bottom: var(--s-3); }
+.objective-card .ui-icon { color: var(--action); width: 22px; height: 22px; }
+.objective-card h3 { font-size: var(--t-card); font-weight: 500; }
+.stat-strip { width: 100%; margin: auto 0 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); border-bottom: 1px solid var(--line-strong); }
+.stat-strip > div { display: flex; align-items: center; gap: var(--s-5); padding: var(--s-5); border-right: 1px solid var(--line); }
+.stat-strip > div:first-child { padding-left: 0; }.stat-strip > div:last-child { border-right: 0; }
+.stat-strip dt { display: flex; align-items: center; gap: var(--s-2); font-size: var(--t-body); }
+.stat-strip dd { order: -1; margin: 0; font-size: var(--t-stat); line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.stat-strip dt .ui-icon { width: 16px; height: 16px; color: var(--muted); }
+@media(max-width:1279px), (max-height:860px) { main > .about-section { height: auto; min-height: 100svh; }.about-section > .wrap { height: auto; }.stat-strip { margin-top: var(--s-7); } }
+@media(640px <= width < 1024px) { .about-body { display: block; }.about-copy { max-width: none; }.about-aside { grid-template-columns: 1fr 1fr; margin-top: var(--s-6); gap: var(--s-5); }.objective-card { padding: var(--s-5); } }
+@media(max-width:639px) { .about-body { display: flex; flex-direction: column; gap: var(--s-6); }.about-aside { gap: var(--s-5); }.objective-card { padding: var(--s-5); }.stat-strip { margin-top: var(--s-6); }.stat-strip > div { flex-direction: column; align-items: flex-start; padding: var(--s-4); gap: var(--s-2); }.stat-strip dt { font-size: var(--t-small); }.stat-strip dt .ui-icon { display: none; } }
+
+  @media (max-width:639px) {
+    main > .about-section { --hm:2;min-height:calc(2 * 100svh); }
+    .about-section > .wrap {display:flex;flex-flow:column;min-height:calc(2 * 100svh - var(--padt) - var(--padb));}
+    .about-body { flex:1;justify-content:space-between; }
+    .about-copy {min-height:calc(100svh - var(--padt) - 96px);align-content:start;}
+    .about-aside {flex:1 0 auto;align-content:space-evenly;padding-top:var(--s-6);gap:var(--s-6);}
+    .about-quote {padding-block:var(--s-5);}.stat-strip {flex:none;margin-top:var(--s-6);}
+  }
+</style>

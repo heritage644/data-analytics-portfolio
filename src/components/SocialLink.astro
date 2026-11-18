@@ -1,0 +1,17 @@
+---
+import { profiles } from '../data/portfolio';
+import { local } from '../lib/paths';
+import Icon from './Icon.astro';
+interface Props { profile: (typeof profiles)[number]; variant?: 'primary' | 'secondary' | 'icon' }
+const {profile,variant='secondary'} = Astro.props;
+const source = profile.icon === 'fiverr' ? 'brand/fiverr.svg' : `assets/icons/${profile.icon}.svg`;
+---
+<a class:list={['social-link',variant === 'icon' ? 'icon-button' : `btn btn--${variant}`,`social-${profile.icon}`]} href={profile.url} target="_blank" rel="noopener noreferrer" aria-label={variant==='icon'?profile.label:undefined}>
+  <img src={local(source)} alt="" width="18" height="18" loading="lazy" decoding="async" />{variant!=='icon' && <>{profile.label}<Icon name="arrow-up-right" /></>}
+</a>
+<style is:global>
+.social-link img { width: 18px; height: 18px; object-fit: contain; }
+.social-fiverr.btn--primary img { filter: brightness(0) invert(1); }
+[data-theme='dark'] .social-link:is(.social-x,.social-fiverr):not(.btn--primary) img { filter: brightness(0) invert(1); }
+[data-theme='dark'] .social-fiverr.btn--primary img { filter: brightness(0); }
+</style>

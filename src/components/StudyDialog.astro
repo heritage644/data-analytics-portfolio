@@ -1,0 +1,91 @@
+---
+import { copy } from '../data/portfolio';
+import Icon from './Icon.astro';
+---
+<dialog id="case-dialog" data-loading={copy.ui.loading} aria-label={copy.caseStudy}>
+  <div class="dialog-bar"><span class="mono"><Icon name="file-text" />{copy.caseStudy}</span><span data-page-slot>{copy.ui.openPage}<Icon name="arrow-up-right" /></span>
+    <button type="button" class="icon-button" data-close aria-label={copy.ui.closeStudy} title={copy.ui.closeStudy}><Icon name="x" /></button>
+  </div>
+  <div class="dialog-scroll" data-dialog-body><p class="loading-study" role="status">{copy.ui.loading}</p></div>
+</dialog>
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('#case-dialog');
+  if (dialog && typeof dialog.showModal === 'function') {
+    const body = dialog.querySelector<HTMLElement>('[data-dialog-body]')!;
+    const close = dialog.querySelector<HTMLButtonElement>('[data-close]')!;
+    const slot = dialog.querySelector<HTMLElement>('[data-page-slot]')!;
+    const pageLink = document.createElement('a');
+    pageLink.className = 'm-link'; pageLink.dataset.fullPage = '';
+    pageLink.append(...Array.from(slot.childNodes));
+    document.querySelectorAll('[data-study-link]').forEach(a => a.setAttribute('aria-haspopup', 'dialog'));
+    let last: HTMLAnchorElement | null = null;
+    let request: AbortController | null = null;
+    const cache = new Map<string, HTMLElement>();
+    // Link targets are real static pages. Only enhance unmodified same-origin navigation.
+    document.addEventListener('click', async event => {
+      const link = (event.target as Element).closest<HTMLAnchorElement>('a[data-study-link]');
+      if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || link.origin !== location.origin) return;
+      event.preventDefault();
+      last = link; pageLink.href = link.href; slot.replaceChildren(pageLink);
+      request?.abort(); const controller = new AbortController(); request = controller;
+      dialog.removeAttribute('aria-labelledby');
+      const loading = document.createElement('p'); loading.className = 'loading-study'; loading.setAttribute('role','status'); loading.textContent = dialog.dataset.loading!;
+      body.replaceChildren(loading); dialog.showModal(); close.focus();
+      document.body.classList.add('study-open');
+      try {
+        let article = cache.get(link.href);
+        if (!article) {
+          const response = await fetch(link.href, {signal:controller.signal});
+          if (!response.ok) throw new Error('Case study unavailable');
+          const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
+          article = doc.querySelector<HTMLElement>('[data-study-article]') ?? undefined;
+          if (!article) throw new Error('Missing case study');
+          // The standalone page starts at h1; a dialog on the home page starts at h2.
+          for (const h of article.querySelectorAll('h1,h2')) {
+            const heading = document.createElement(h.tagName==='H1'?'h2':'h3');
+            if(h.id) heading.id = h.id;
+            heading.append(...Array.from(h.childNodes)); h.replaceWith(heading);
+          }
+          cache.set(link.href, article);
+        }
+        if (controller.signal.aborted || !dialog.open) return;
+        body.replaceChildren(article.cloneNode(true)); body.scrollTop = 0;
+        dialog.setAttribute('aria-labelledby','study-title');
+        const title = body.querySelector<HTMLElement>('#study-title');
+        if (title) { title.tabIndex=-1; title.focus({preventScroll:true}); }
+      } catch { if (!controller.signal.aborted && dialog.open) location.assign(link.href); }
+    });
+    const restore = () => {
+      request?.abort(); request = null; document.body.classList.remove('study-open');
+      last?.focus({preventScroll:true}); last = null;
+    };
+    // A native 'close' event is queued. Restore immediately so it cannot steal focus
+    // from the next card or abort its fetch when several studies are opened in succession.
+    const dismiss = () => { if (dialog.open) { dialog.close(); restore(); } };
+    close.addEventListener('click', dismiss);
+    dialog.addEventListener('cancel', e => { e.preventDefault(); dismiss(); });
+    dialog.addEventListener('click', e => { if(e.target!==dialog) return; const r = dialog.getBoundingClientRect(); if(e.clientX<r.left || e.clientX>r.right || e.clientY<r.top || e.clientY>r.bottom) dismiss(); });
+    dialog.addEventListener('close', () => { if (!dialog.open && last) restore(); });
+    dialog.addEventListener('keydown', e => {
+      if(e.key!=='Tab') return;
+      const items=[...dialog.querySelectorAll<HTMLElement>('a[href],button:not([disabled])')].filter(el=>el.offsetWidth>0);
+      const first=items[0], end=items.at(-1);
+      if(e.shiftKey && document.activeElement===first) {e.preventDefault();end?.focus();}
+      if(!e.shiftKey && (document.activeElement===end || (document.activeElement?.id==='study-title' && !body.querySelector('a[href]')))) {e.preventDefault();first?.focus();}
+    });
+  }
+</script>
+<style is:global>
+body.study-open {overflow:hidden;}
+#case-dialog { width: min(920px,calc(100% - 64px)); max-width: none; max-height: min(90svh,1000px); margin:auto; padding:0; border-radius:var(--r-lg); border:1px solid var(--line-strong); background:var(--paper);color:var(--ink); }
+#case-dialog[open] {display:flex; flex-direction:column;}
+#case-dialog::backdrop {background:var(--veil);}
+.dialog-bar {display:flex;align-items:center;gap:var(--s-4);padding:var(--s-3) var(--s-5);flex:none;border-bottom:1px solid var(--line);}
+.dialog-bar > span,.dialog-bar a {display:inline-flex;align-items:center;gap:var(--s-2);}
+.dialog-bar > span:first-child {margin-right:auto;color:var(--muted);}.dialog-bar a { font-size:var(--t-small);min-height:44px; }
+.dialog-scroll {overflow-y:auto;overscroll-behavior:contain;min-height:0;}
+.loading-study {padding:var(--s-7);}
+.dialog-scroll #study-title:focus-visible {outline-offset:6px;}
+@media (max-width:639px) {#case-dialog {width:calc(100% - 16px);max-height:calc(100svh - 24px);border-radius:var(--r-md);}.dialog-bar {gap:var(--s-2);padding:8px 12px;}.dialog-scroll {padding-bottom:env(safe-area-inset-bottom);}}
+@media (prefers-reduced-motion:no-preference) { #case-dialog[open] {animation:open-study 160ms var(--ease);}@keyframes open-study {from {opacity:.6;transform:translateY(8px);}to {opacity:1;transform:none;}} }
+</style>

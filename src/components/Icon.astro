@@ -1,0 +1,8 @@
+---
+import { readFileSync } from 'node:fs';
+interface Props { name: string; class?: string }
+const { name, class: cls } = Astro.props;
+// Trusted, checked-in Lucide assets from the skill, inlined at build time (no icon library in JS).
+const svg = readFileSync(`.agents/skills/design-taste-frontend/assets/icons/demo/ui-${name}.svg`, 'utf8');
+---
+<span class:list={['ui-icon', cls]} aria-hidden="true" set:html={svg} />

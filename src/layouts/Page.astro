@@ -1,0 +1,63 @@
+---
+import { copy, person, profiles } from '../data/portfolio';
+import { swatch } from '../lib/brand';
+import { local } from '../lib/paths';
+import Header from '../components/Header.astro';
+import '../styles/base.css';
+interface Props { title?: string; description?: string; home?: boolean; noindex?: boolean }
+const { title = copy.siteTitle, description = copy.description, home = false, noindex = false } = Astro.props;
+const canonical = Astro.site && new URL(Astro.url.pathname, Astro.site).href;
+const card = local('social-card.png');
+const image = Astro.site ? new URL(card, Astro.site).href : card;
+const schema = { '@context': 'https://schema.org', '@type': 'Person', name: person.name, jobTitle: person.jobTitle,
+  alumniOf: { '@type': 'CollegeOrUniversity', name: person.university },
+  sameAs: profiles.map(p => p.url), ...(Astro.site ? { url: new URL(local(), Astro.site).href } : {}) };
+---
+<!doctype html>
+<html lang="en" data-type="service" data-radius="soft" data-buttons="tonal" data-motion>
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="page-type" content="service" /><meta name="site-kind" content="other" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content={swatch('p-bg')} />
+    <title>{title}</title><meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}{noindex && <meta name="robots" content="noindex" />}
+    <meta property="og:type" content="website" /><meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content={`${person.name} · ${copy.portfolio}`} />
+    <meta property="og:title" content={title} /><meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={image} /><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${person.name} · ${person.title}`} />
+    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={image} /><meta name="twitter:image:alt" content={`${person.name} · ${person.title}`} />
+    <link rel="icon" type="image/svg+xml" href={local('favicon.svg')} />
+    <link rel="preload" href={local('fonts/schibsted-grotesk.woff2')} as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="stylesheet" href={local('assets/motion/motion.css')} />
+    <link rel="sitemap" href={local('sitemap.xml')} />
+    {home && ['moments.js', 'lib.js', 'word-highlight/moment.js'].map(p => <link rel="modulepreload" href={local(`assets/moments/${p}`)} />)}
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        let choice;
+        try { choice = localStorage.getItem('ra-theme'); } catch { /* Storage is optional. */ }
+        root.dataset.theme = choice === 'light' || choice === 'dark' ? choice : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        root.classList.add('m-enter','mo-js');
+        setTimeout(() => root.classList.add('m-enter-done'), 700);
+        setTimeout(() => root.classList.add('mo-safe'), 2500);
+      })();
+    </script>
+    <slot name="head" />
+  </head>
+  <body>
+    <!-- Service / independent data analysis. Stone-blueprint, Schibsted Grotesk, split, nav-mega, dark-band, tonal, initial, word-highlight, close-type, footer-columns. No stock material, shaders or invented data. -->
+    <Header home={home} />
+    <slot />
+    {/* Standalone kit modules: native lazy-loading stays in effect, including future dashboard PNGs. */}
+    <script is:inline type="module" define:vars={{momentLoader:home ? local('assets/moments/moments.js') : null}}>
+      if (momentLoader) { const moments = await import(momentLoader); await moments.ready; }
+      document.documentElement.dataset.ready = '1';
+    </script>
+    <script is:inline type="module" src={local('assets/motion/motion.js')}></script>
+    <script src="../lib/navigation.ts"></script>
+  </body>
+</html>

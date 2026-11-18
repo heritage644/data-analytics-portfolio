@@ -1,0 +1,59 @@
+---
+/** An original axonometric drawing. Coordinates are illustration geometry, not business data. */
+const project = (u: number, v: number, z = 0) => [310 + 0.94 * (u-v), 213 + 0.45 * (u+v)-z].map(n => +n.toFixed(2)).join(',');
+const face = (...vertices: [number, number, number?][]) => vertices.map(([u,v,z]) => project(u,v,z)).join(' ');
+const a=-164, b=164, c=-122, d=122;
+const sheets = [-26,-13,0];
+const shapes = [34,66,51,110,93,158,209].map((height, i) => ({ u:-148+i*44, v:-87, width:29, depth:38, height, light:false }));
+const solids = [...shapes, ...[24,38,29,54,42,72,94].map((height,i) => ({ u:-148+i*44, v:-25, width:29, depth:28, height, light:true }))].sort((a,b) => a.u+a.v-b.u-b.v);
+const corners = [[30,22],[590,22],[30,375],[590,375]];
+---
+<svg class="sculpture" viewBox="0 0 620 398" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="small-grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" stroke="var(--draft-grid)" stroke-width=".7"/></pattern>
+    <pattern id="paper-hatch" width="4" height="4" patternUnits="userSpaceOnUse"><path d="M-1 1l2-2M0 4l4-4m-1 5 2-2" stroke="var(--draft-line)" stroke-width=".8"/></pattern>
+  </defs>
+  <rect width="620" height="398" fill="url(#small-grid)"/>
+  {/* Blank KPI tiles: shapes and typographic rules suggest a report layout without fabricating values. */}
+  <g class="kpi-tiles" transform="translate(42 38)">
+    {[0, 1, 2].map(i => <g transform={`translate(${i * 58} 0)`}>
+      <rect width="50" height="32" rx="3" fill="var(--drawing-bg)" stroke="var(--draft-line)" />
+      <rect x="6" y="6" width="6" height="6" rx="1" fill="var(--blue-mid)" />
+      <path d="M17 9h19" stroke="var(--draft-line)" stroke-width="1.5" />
+      <path d="M7 22h17" stroke="var(--drawing-label)" stroke-width="2.5" />
+    </g>)}
+  </g>
+  <g stroke="var(--draft-line)" stroke-width="1">{corners.map(([x,y])=><path d={`M${x! - 4} ${y}h8M${x} ${y! - 4}v8`}/>)}</g>
+  <g stroke="var(--draft-line)" stroke-width=".9" stroke-dasharray="3 5">
+    <path d={`M${project(-190,-122,0)} L${project(192,-122,0)} M${project(164,-150,0)} L${project(164,148,0)}`}/>
+    <path d={`M${project(-164,122,-34)} L${project(-164,122,12)} M${project(164,122,-34)} L${project(164,122,62)} M${project(164,-122,-34)} L${project(164,-122,180)}`}/>
+  </g>
+  <polygon points={face([a+8,c+7,-38],[b+8,c+7,-38],[b+8,d+7,-38],[a+8,d+7,-38])} fill="var(--draft-ink)" opacity=".09"/>
+  {sheets.map((z,i) => <g stroke="var(--draft-ink)" stroke-width="1.15" stroke-linejoin="round">
+    <polygon points={face([a,c,z],[b,c,z],[b,d,z],[a,d,z])} fill={i===1?'var(--blue-wash)':'var(--sheet)'} />
+    <polygon points={face([a,d,z],[b,d,z],[b,d,z-4],[a,d,z-4])} fill="var(--sheet-edge)"/>
+    <polygon points={face([b,c,z],[b,d,z],[b,d,z-4],[b,c,z-4])} fill="var(--blue-mid)"/>
+  </g>)}
+  <g transform="matrix(.94 .45 -.94 .45 310 213)">
+    <rect x="-154" y="-112" width="308" height="213" fill="url(#small-grid)"/>
+    <path d="M-150 9h301M-20 19v83" stroke="var(--draft-line)" stroke-width="1.4"/>
+    <g transform="translate(-90 61)">
+      <circle r="36" fill="none" stroke="var(--draft-ink)" stroke-width="16"/>
+      <circle cy="-4" r="36" fill="none" stroke="var(--blue-tint)" stroke-width="16"/>
+      <circle cy="-4" r="36" fill="none" stroke="var(--blue)" stroke-width="16" stroke-dasharray="140 227" transform="rotate(-112)"/>
+      <circle cy="-4" r="36" fill="none" stroke="var(--blue-mid)" stroke-width="16" stroke-dasharray="32 227" transform="rotate(118)"/>
+    </g>
+    <g stroke="var(--draft-line)" stroke-width="1.1"><path d="M-2 30h144M-2 52h144M-2 74h144M-2 96h144"/></g>
+    <path d="m-2 86 19-5 19-20 19 7 20-28 20 12 19-18 23-9v71H-2z" fill="var(--blue-tint)" opacity=".85"/>
+    <path d="m-2 86 19-5 19-20 19 7 20-28 20 12 19-18 23-9" stroke="var(--blue)" stroke-width="4" stroke-linecap="round"/>
+    {[[-2,86],[36,61],[75,40],[137,25]].map(([x,y])=><circle cx={x} cy={y} r="3" fill="var(--sheet)" stroke="var(--blue)" stroke-width="2"/>)}
+  </g>
+  {solids.map(({u,v,width:w,depth:l,height:h,light}) => <g stroke="var(--draft-ink)" stroke-width="1.1" stroke-linejoin="round">
+    <polygon points={face([u,v+l,h],[u+w,v+l,h],[u+w,v+l,0],[u,v+l,0])} fill={light?'var(--blue-tint)':'var(--blue-side)'}/>
+    <polygon points={face([u+w,v,h],[u+w,v+l,h],[u+w,v+l,0],[u+w,v,0])} fill={light?'var(--blue-mid)':'var(--blue-deep)'}/>
+    <polygon points={face([u,v,h],[u+w,v,h],[u+w,v+l,h],[u,v+l,h])} fill={light?'var(--sheet)':'var(--blue-top)'}/>
+    {light && <polygon points={face([u+w,v,h],[u+w,v+l,h],[u+w,v+l,0],[u+w,v,0])} fill="url(#paper-hatch)" stroke="none"/>}
+  </g>)}
+  <g stroke="var(--draft-line)" stroke-width="1"><path d="M492 45l27-17h42m-5-3v6M44 237v12l-14 8M511 319l22 11h37" stroke-dasharray="3 3"/><circle cx="561" cy="28" r="2.5" fill="var(--drawing-bg)"/><circle cx="570" cy="330" r="2.5" fill="var(--drawing-bg)"/></g>
+  <g transform="translate(45 340)" stroke="var(--drawing-label)" stroke-linecap="round" stroke-width="1.5"><path d="M0 0v-20M0 0l18 9M0 0l-15 8"/><circle r="2.5" fill="var(--blue)" stroke="none"/></g>
+</svg>
