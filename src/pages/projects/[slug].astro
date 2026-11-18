@@ -16,6 +16,6 @@ const {project, number}=Astro.props;
   <ImageLightbox />
 </Page>
 <style>
-.case-page {padding:calc(var(--nav) + var(--s-6)) 0 var(--s-8);}.back-link {display:inline-flex;align-items:center;gap:var(--s-2);min-height:44px;font-size:var(--t-small);margin-bottom:var(--s-5);}
+.case-page {padding: max(var(--s-6),env(safe-area-inset-top, 0px)) 0 var(--s-8);}.back-link {display:inline-flex;align-items:center;gap:var(--s-2);min-height:44px;font-size:var(--t-small);margin-bottom:var(--s-5);}
 .case-page :global(.study) {border:1px solid var(--line-strong);border-radius:var(--r-lg);overflow:clip;max-width:960px;margin:0 auto;}
 </style>

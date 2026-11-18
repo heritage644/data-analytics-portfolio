@@ -6,4 +6,4 @@ import { copy, person } from '../data/portfolio';
 import { local } from '../lib/paths';
 ---
 <Page title={`${copy.ui.missing} | ${person.name}`} noindex><main id="top" tabindex="-1" class="missing-page"><div class="wrap"><p class="mono">404</p><h1>{copy.ui.missing}</h1><p>{copy.ui.missingBody}</p><a class="btn btn--primary" href={local()}><Icon name="arrow-left" />{copy.ui.home}</a></div></main><Footer compact /></Page>
-<style>.missing-page { padding-block:calc(var(--nav) + var(--padt)) var(--padt); }.missing-page .wrap { display:grid;gap:var(--s-5);justify-items:start; }</style>
+<style>.missing-page { padding-block:var(--padt); }.missing-page .wrap { display:grid;gap:var(--s-5);justify-items:start; }</style>

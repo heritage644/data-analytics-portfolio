@@ -49,7 +49,7 @@ export const copy = {
   email: 'Email me', cv: 'Download CV', top: 'Back to top',
   trademarks: 'Product names and logos are trademarks of their owners.',
   ui: {
-    theme: 'Dark mode', menu: 'Navigation menu', navigation: 'Main navigation', skip: 'Skip to content',
+    skip: 'Skip to content',
     profileLinks: 'Social profiles', all: 'All', filter: 'Filter projects', projectUnit: 'projects',
     projectSingular: 'project', shown: 'shown', openPage: 'Open full page', closeStudy: 'Close case study',
     loading: 'Opening case study…', back: 'Back to projects', enlarge: 'Enlarge dashboard', closeImage: 'Close enlarged image', gallery: 'Dashboard views',

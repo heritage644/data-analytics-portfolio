@@ -67,12 +67,12 @@ Still optional: set a per-study `dashboardUrl` / `reportUrl`, set `CONTACT_EMAIL
 ## Implementation and checks
 
 - `src/components/DataSculpture.astro`: decorative SVG geometry, not analytical results. `Thumbnail.astro` and `StudyGallery.astro` render the supplied evidence.
-- `src/layouts/Page.astro`, `src/styles/`: the shared page system, font, theme tokens and metadata.
+- `src/layouts/Page.astro`, `src/styles/`: the shared page system, font, theme tokens and metadata. Light and dark mode follow the device setting automatically, even without JavaScript. There is no top navigation bar or saved theme override.
 - `src/components/CaseStudy.astro`: the one full case-study presentation. A normal anchor works without JS; a normal click fetches that static article into a native dialog. Modified clicks, copying the link, and opening the full page still work.
 - `src/pages/`: static home, six generated studies, 404, RA favicon, 1200×630 PNG, sitemap and robots.
 - `scripts/prepare-assets.mjs`: prepares the kit’s layout CSS without its example palettes, plus the used motion modules, neutral tool/social marks, font and licenses. The original `.agents/skills/design-taste-frontend` is a build input: **keep it in the repository**. The unused demo photos and effects never enter the output.
 - `tests/content.test.ts`: supplied content, image metadata, AA contrast pairs, counts, filters, optional links and healthcare wording.
-- `tests/browser.mjs`: Chromium interaction and axe WCAG A/AA checks at 360, 768 and 1440px in both themes. Includes reduced motion, repeat pointer/keyboard hero jumps, menu focus, all filters, nested lightboxes, standalone routes and JavaScript-disabled navigation.
+- `tests/browser.mjs`: Chromium interaction and axe WCAG A/AA checks at 360, 768 and 1440px in both themes. Includes reduced motion, live system-theme changes, repeat pointer/keyboard hero jumps, all filters, nested lightboxes, standalone routes and JavaScript-disabled navigation.
 
 To run the browser regression suite, start `npm run preview` in another terminal, then:
 

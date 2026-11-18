@@ -31,7 +31,7 @@ import Icon from './Icon.astro';
   </div>
 </section>
 <style is:global>
-  main > .portfolio-hero { --hgap: clamp(48px,8svh,96px); --hpadb: 24px; background: var(--p-bg); }
+  main > .portfolio-hero { --hgap: clamp(48px,8svh,96px); --hpadb: 24px; padding-block-start: max(var(--hgap), env(safe-area-inset-top, 0px)); background: var(--p-bg); }
   .portfolio-hero > .wrap { justify-content: space-between; gap: var(--s-6); }
   .portfolio-hero .hero-text.hero__grid { height: auto; flex: 1 1 0; min-height: 0; align-content: start; grid-template-rows: auto; }
   .portfolio-hero .hero__text { padding-block: 0; }
@@ -62,7 +62,7 @@ import Icon from './Icon.astro';
   .folio-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); padding-top: var(--s-3); border-top: 1px solid var(--line-strong); font-size: var(--t-small); color: var(--muted); }
   .folio-foot > * { display: inline-flex; align-items: center; gap: var(--s-2); }
   .folio-foot .edu-short { display:none; }
-  .folio-foot a { min-height: 44px; color: var(--ink); }
+  .folio-foot a { min-height: 44px; }
   @media (1024px <= width < 1280px) { .portfolio-hero .hero__text { grid-column: 1 / span 6; }.portfolio-hero h1 { font-size: clamp(49px,5.35vw,70px); }.hero-tools .tool-label { display: none; } }
   @media (max-width: 1023px) {
     main > .portfolio-hero { --hgap: 32px; }

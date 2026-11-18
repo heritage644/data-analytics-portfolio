@@ -12,7 +12,11 @@
 }
 
 @font-face { font-family: 'Schibsted Grotesk'; src: url('/fonts/schibsted-grotesk.woff2') format('woff2'); font-weight: 400 900; font-style: normal; font-display: swap; }
-html { scroll-behavior: smooth; scroll-padding-top: var(--nav); }
+/* The shared layout normally reserves space for a fixed header. There isn't one here. */
+:root { --nav: 0px; --padt: var(--padb); }
+html { scroll-behavior: smooth; scroll-padding-top: env(safe-area-inset-top, 0px); }
+.skip-link { position: fixed; top: max(var(--s-3), env(safe-area-inset-top, 0px)); z-index: 10; }
+.skip-link:focus { transform: none; }
 body { -webkit-font-smoothing: antialiased; }
 ::selection { color: var(--white); background: var(--red-pressed); }
 button, a { -webkit-tap-highlight-color: transparent; }
@@ -29,50 +33,15 @@ button.icon-button, a.icon-button { display: inline-grid; place-items: center; i
 .icon-button:hover { background: color-mix(in srgb,var(--ink) 6%, transparent); }
 .icon-button .ui-icon { width: 18px; height: 18px; }
 .numeral { font-variant-numeric: tabular-nums; }
-.nav .nav__bar { gap: var(--s-6); }
-.nav__logo.brand { gap: var(--s-3); }
-.brand .mark.mark--initial, .footer-brand .mark.mark--initial { width: 42px; height: 42px; font-weight: 600; font-size: 21px; letter-spacing: -.1em; padding-right: 2px; }
-.brand-info { display: grid; gap: 4px; }
-.brand-info strong { font-weight: 500; font-size: 19px; letter-spacing: -.035em; }
-.brand-info small { font: 400 var(--t-label)/1 var(--font-text); color: var(--muted); letter-spacing: 0; }
-.nav__links { justify-content: center; }
-.nav__end { display: flex; align-items: center; gap: var(--s-5); }
-.theme-control .sun, [data-theme='dark'] .theme-control .moon { display: none; }
-[data-theme='dark'] .theme-control .sun { display: inline-block; }
-.mobile-profile { display: none; }
-.nav__link[aria-current='location'] { color: var(--action); }
-.nav__link[aria-current='location']::before { transform: scaleX(1); }
-.nav__menu .menu-project { display: flex; align-items: baseline; gap: var(--s-3); padding-block: var(--s-3); border-bottom: 1px solid var(--line); }
-.nav__menu .menu-project span { color: var(--action); }
-.nav__menu .menu-project:hover { color: var(--action); }
 .btn { gap: var(--s-3); }
 .btn .ui-icon { width: 17px; height: 17px; }
 .kit-badge { display: inline-flex; align-items: center; gap: var(--s-2); padding: 6px 11px; background: var(--chip); border: 1px solid var(--chip-edge); border-radius: var(--r-sm); font: 500 var(--t-label)/1.3 var(--font-text); white-space: nowrap; color: var(--action); }
 .kit-badge img { object-fit: contain; width: 18px; height: 18px; }
 .tools-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); }
-@media (max-width: 1023px) {
- .nav__end { margin-left: auto; gap: var(--s-2); }
- .nav .nav__bar { gap: var(--s-2); }
- .nav.is-open .nav__links { padding-bottom: var(--s-7); }
- .nav.is-open .mobile-profile { display: block; margin-top: auto; padding-top: var(--s-6); color: var(--muted); }
- .nav.is-open .nav__expand, .nav.is-open .nav__menu { display: none; }
-}
 @media (max-width: 639px) {
- .brand .mark.mark--initial { width: 34px; height: 34px; font-size: 18px; }
- .brand .brand-info strong { font-size: 17px; }
- .brand .brand-info small { font-size: var(--t-label); }
- .brand-info { gap: 3px; }
  .btn-row > .btn { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-
-.brand-descriptor { border-left:1px solid var(--line-strong); padding-left:var(--s-4); margin-left:calc(-1 * var(--s-4)); color:var(--muted); font:400 var(--t-label)/1.5 var(--font-mono); }
-@media(max-width:1279px) {.brand-descriptor {display:none;}}
-
-.nav__toggle .close-menu,.nav__toggle[aria-expanded='true'] .open-menu { display:none; }
-.nav__toggle[aria-expanded='true'] .close-menu { display:inline-block; }
-.nav__item.dismissed .nav__menu {visibility:hidden;opacity:0;pointer-events:none;}
-@media(scripting:none) {.theme-control,.nav__end .nav__toggle {display:none;}}
 
 /* Button fills keep white lettering in both modes. Text links can use the lifted accent. */
 html[data-buttons] .btn.btn--primary { background:var(--red); color:var(--white); border-color:var(--red); }
@@ -80,5 +49,5 @@ html[data-buttons] .btn.btn--primary:hover { background:var(--red-hover); border
 html[data-buttons] .btn.btn--primary:active { background:var(--red-pressed); border-color:var(--red-pressed); }
 html[data-buttons] .btn.btn--secondary { color:var(--action); background:var(--paper); border-color:var(--line-strong); }
 html[data-buttons] .btn.btn--secondary:hover { background:var(--chip); }
-.m-link:not(.nav__logo),.back-link,.dialog-bar a { color:var(--action); }
+.m-link,.back-link,.dialog-bar a { color:var(--action); }
 :where(a,button,input,[tabindex]):focus-visible { outline-color:var(--focus); }
