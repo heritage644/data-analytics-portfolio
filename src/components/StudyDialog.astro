@@ -37,8 +37,11 @@ import Icon from './Icon.astro';
         if (!article) {
           const response = await fetch(link.href, {signal:controller.signal});
           if (!response.ok) throw new Error('Case study unavailable');
-          const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
-          article = doc.querySelector<HTMLElement>('[data-study-article]') ?? undefined;
+          // A template stays inert: don't preload another page's head, fonts or
+          // dashboard images while extracting just its article.
+          const template = document.createElement('template');
+          template.innerHTML = await response.text();
+          article = template.content.querySelector<HTMLElement>('[data-study-article]') ?? undefined;
           if (!article) throw new Error('Missing case study');
           // The standalone page starts at h1; a dialog on the home page starts at h2.
           for (const h of article.querySelectorAll('h1,h2')) {
@@ -59,7 +62,7 @@ import Icon from './Icon.astro';
       request?.abort(); request = null; document.body.classList.remove('study-open');
       last?.focus({preventScroll:true}); last = null;
     };
-    // A native 'close' event is queued. Restore immediately so it cannot steal focus
+    // A native 'close' event is queued. Restore immediately so it cannot redirect focus
     // from the next card or abort its fetch when several studies are opened in succession.
     const dismiss = () => { if (dialog.open) { dialog.close(); restore(); } };
     close.addEventListener('click', dismiss);

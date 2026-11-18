@@ -1,0 +1,72 @@
+---
+import { copy } from '../data/portfolio';
+import Icon from './Icon.astro';
+---
+<dialog id="image-lightbox" aria-labelledby="image-title" data-fit={copy.ui.fit} data-actual-label={copy.ui.actual}>
+  <div class="lightbox-bar"><span id="image-title"></span>
+    <button type="button" class="zoom-control" data-zoom aria-controls="image-stage">{copy.ui.actual}</button>
+    <button type="button" class="icon-button" data-dismiss-image aria-label={copy.ui.closeImage}><Icon name="x" /></button>
+  </div>
+  <div class="lightbox-canvas" id="image-stage" data-canvas role="region" aria-label={copy.ui.enlarged}></div>
+</dialog>
+<script>
+  const viewer = document.querySelector<HTMLDialogElement>('#image-lightbox');
+  if (viewer && typeof viewer.showModal === 'function') {
+    const canvas = viewer.querySelector<HTMLElement>('[data-canvas]')!;
+    const title = viewer.querySelector<HTMLElement>('#image-title')!;
+    const close = viewer.querySelector<HTMLButtonElement>('[data-dismiss-image]')!;
+    const zoom = viewer.querySelector<HTMLButtonElement>('[data-zoom]')!;
+    let opener: HTMLAnchorElement | null = null;
+    const setZoom = (actual:boolean) => {
+      viewer.dataset.actual = String(actual);
+      zoom.textContent = actual ? viewer.dataset.fit! : viewer.dataset.actualLabel!;
+      canvas.tabIndex = actual ? 0 : -1;
+      canvas.scrollTo({top:0,left:0,behavior:'instant'});
+    };
+    const dismiss = () => {
+      if (!viewer.open) return;
+      viewer.close(); document.body.classList.remove('lightbox-open');
+      canvas.replaceChildren(); opener?.focus({preventScroll:true}); opener = null;
+    };
+    // Delegation serves both direct study pages and articles fetched into the case dialog.
+    // The link itself opens the full-resolution optimized image without JavaScript.
+    document.addEventListener('click', event => {
+      const link = (event.target as Element).closest<HTMLAnchorElement>('a[data-enlarge]');
+      if (!link || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.shiftKey || event.metaKey || event.altKey) return;
+      const preview = link.querySelector('img'); if (!preview) return;
+      event.preventDefault(); opener = link; title.textContent = link.dataset.enlarge!;
+      const image = new Image(); image.alt = preview.alt; image.width = Number(link.dataset.width); image.height = Number(link.dataset.height);
+      image.loading = 'lazy'; image.decoding = 'async'; image.src = link.href;
+      canvas.replaceChildren(image); setZoom(false); viewer.showModal();
+      document.body.classList.add('lightbox-open'); close.focus({preventScroll:true});
+    });
+    zoom.addEventListener('click', () => setZoom(viewer.dataset.actual !== 'true'));
+    close.addEventListener('click', dismiss);
+    viewer.addEventListener('cancel', event => { event.preventDefault(); dismiss(); });
+    viewer.addEventListener('click', event => {
+      if (event.target !== viewer) return;
+      const box = viewer.getBoundingClientRect();
+      if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) dismiss();
+    });
+    viewer.addEventListener('keydown', event => {
+      if (event.key !== 'Tab') return;
+      const last = canvas.tabIndex === 0 ? canvas : close;
+      if (event.shiftKey && document.activeElement === zoom) { event.preventDefault(); last.focus(); }
+      if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); zoom.focus(); }
+    });
+  }
+</script>
+<style>
+  :global(body.lightbox-open) {overflow:hidden;}
+  #image-lightbox { width:min(1160px,calc(100vw - 32px)); max-width:none; max-height:calc(100svh - 32px); margin:auto; padding:0; overflow:hidden; border:1px solid var(--line-strong); border-radius:var(--r-md); background:var(--paper); color:var(--ink); }
+  #image-lightbox[open] { display:flex; flex-direction:column; }
+  #image-lightbox::backdrop { background:var(--veil); }
+  .lightbox-bar { display:flex; align-items:center; gap:var(--s-3); padding:8px 12px; border-bottom:1px solid var(--line); }
+  #image-title {flex:1; min-width:0; font-size:var(--t-small); font-weight:500;}
+  .zoom-control { min-height:44px; padding-inline:12px; flex:none; color:var(--action); border:1px solid var(--chip-edge); border-radius:var(--r-sm); background:var(--chip); font-size:var(--t-small); cursor:pointer; }
+  .lightbox-bar .icon-button { flex:none; }
+  .lightbox-canvas { overflow:auto; overscroll-behavior:contain; min-height:0; background:var(--p-surface); }
+  .lightbox-canvas :global(img) { display:block; margin-inline:auto; width:auto; height:auto; max-width:100%; max-height:calc(100svh - 112px); object-fit:contain; }
+  #image-lightbox[data-actual='true'] .lightbox-canvas :global(img) { width:auto; height:auto; max-width:none; max-height:none; }
+  @media(max-width:639px){#image-lightbox {width:calc(100vw - 12px);} .lightbox-bar {gap:6px; padding:6px 8px;} .zoom-control {padding-inline:8px;} }
+</style>

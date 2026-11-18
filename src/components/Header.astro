@@ -19,10 +19,9 @@ const prefix = home ? '' : local();
         <a class="nav__link" href={`${prefix}#${item.id}`}>{item.label}</a>
         {item.id === 'projects' && <div class="nav__menu"><div class="wrap grid">{projects.map((p, i) => <a class="menu-project span-4" href={projectHref(p.slug)}><span class="mono">{folio(i+1)}</span>{p.title}</a>)}</div></div>}
       </div>)}
-      <div class="mobile-profile"><span class="availability"><i class="pip"></i>{copy.availability}</span><span>{person.university}</span></div>
+      <div class="mobile-profile">{person.university}</div>
     </nav>
     <div class="nav__end">
-      <span class="availability"><i class="pip"></i>{copy.availability}</span>
       <button class="icon-button theme-control" type="button" role="switch" aria-checked="false" aria-label={copy.ui.theme} title={copy.ui.theme}><Icon name="moon" class="moon" /><Icon name="sun" class="sun" /></button>
       <button class="nav__toggle" type="button" aria-label={copy.ui.menu} aria-expanded="false" aria-controls="navigation"><Icon name="menu" class="open-menu" /><Icon name="x" class="close-menu" /></button>
     </div>

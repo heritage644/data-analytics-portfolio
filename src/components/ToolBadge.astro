@@ -1,8 +1,8 @@
 ---
 import { toolkit } from '../data/portfolio';
 import { toolIcon } from '../lib/paths';
-interface Props { name: string; full?: boolean; eager?: boolean }
-const {name, full, eager} = Astro.props;
+interface Props { name: string; full?: boolean }
+const {name, full} = Astro.props;
 const tool = toolkit.find(t => t.name === name || t.short === name);
 ---
-<span class="kit-badge">{tool && <img width="18" height="18" data-icon={tool.icon} src={toolIcon(tool.icon)} alt="" loading={eager ? 'eager' : 'lazy'} decoding="async" />}{full ? name : tool?.short ?? name}</span>
+<span class="kit-badge">{tool && <img width="18" height="18" data-icon={tool.icon} src={toolIcon(tool.icon)} alt="" loading="lazy" decoding="async" />}{full ? name : tool?.short ?? name}</span>

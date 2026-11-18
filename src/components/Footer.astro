@@ -9,9 +9,9 @@ const { compact = false } = Astro.props;
 const prefix = compact ? local() : '';
 const fiverr = profiles.find(p=>p.icon==='fiverr')!;
 ---
-<footer id="contact" class:list={['footer', compact?'compact-footer':'closing contact-section']} aria-label={copy.ui.contact}>
+<footer id="contact-section" class:list={['footer', compact?'compact-footer':'closing contact-section']} aria-label={copy.ui.contact}>
   <div class="wrap">
-    {!compact && <section class="closing__cta close--type" aria-labelledby="contact-title">
+    {!compact && <section class="closing__cta close--type" aria-labelledby="contact">
       <SectionTitle title={copy.connect} label={copy.ui.contact} id="contact" />
       <div class="contact-body grid"><p class="contact-copy span-6">{copy.contact}</p>
         <span class="contact-glyph span-6 start-7" aria-hidden="true"><svg viewBox="0 0 260 135" fill="none"><g stroke="currentColor" stroke-width="1.4">{[0,1,2,3,4,5,6].map(i=><path transform={`translate(${i*7} ${-i*2})`} d="M28 121 132 17M54 17h79v79" />)}</g></svg></span>
@@ -33,6 +33,7 @@ const fiverr = profiles.find(p=>p.icon==='fiverr')!;
 </footer>
 <style is:global>
 footer.contact-section,footer.compact-footer { background: var(--paper); }
+footer.contact-section { --padt:calc(var(--nav) + var(--s-4)); }
 footer.contact-section > .wrap { row-gap: var(--s-7); }
 .contact-section .closing__cta { gap: var(--s-7); }
 .contact-body { align-items: start; }

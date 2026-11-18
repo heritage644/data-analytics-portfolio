@@ -3,7 +3,7 @@ import { copy, person, stats } from '../data/portfolio';
 import SectionTitle from './SectionTitle.astro';
 import Icon from './Icon.astro';
 ---
-<section id="about" class="section about-section" aria-labelledby="about-title" data-moment="word-highlight">
+<section id="about-section" class="section about-section" aria-labelledby="about" data-moment="word-highlight">
   <div class="wrap">
     <SectionTitle title={copy.about} id="about" label={copy.ui.profile} />
     <div class="grid grid--top about-body">
@@ -17,7 +17,7 @@ import Icon from './Icon.astro';
   </div>
 </section>
 <style is:global>
-.about-section { background: var(--paper); }
+.about-section { background: var(--p-surface); }
 .about-body { margin-top: var(--head-gap); }
 .about-copy { display: grid; gap: var(--s-4); max-width: 64ch; }
 .about-copy p,.objective-card p { font-size: var(--t-body); line-height: 1.62; }

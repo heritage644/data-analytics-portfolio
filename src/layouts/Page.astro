@@ -19,7 +19,8 @@ const schema = { '@context': 'https://schema.org', '@type': 'Person', name: pers
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="page-type" content="service" /><meta name="site-kind" content="other" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content={swatch('p-bg')} />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content={swatch('white')} />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content={swatch('night')} />
     <title>{title}</title><meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}{noindex && <meta name="robots" content="noindex" />}
     <meta property="og:type" content="website" /><meta property="og:locale" content="en_US" />
@@ -49,10 +50,10 @@ const schema = { '@context': 'https://schema.org', '@type': 'Person', name: pers
     <slot name="head" />
   </head>
   <body>
-    <!-- Service / independent data analysis. Stone-blueprint, Schibsted Grotesk, split, nav-mega, dark-band, tonal, initial, word-highlight, close-type, footer-columns. No stock material, shaders or invented data. -->
+    <!-- Service / independent data analysis. Client red / white, Schibsted Grotesk, split, nav-mega, dark-band, tonal, initial, word-highlight, close-type, footer-columns. No stock material, shaders or invented data. -->
     <Header home={home} />
     <slot />
-    {/* Standalone kit modules: native lazy-loading stays in effect, including future dashboard PNGs. */}
+    {/* Standalone kit modules: native lazy-loading stays in effect, including dashboard screenshots. */}
     <script is:inline type="module" define:vars={{momentLoader:home ? local('assets/moments/moments.js') : null}}>
       if (momentLoader) { const moments = await import(momentLoader); await moments.ready; }
       document.documentElement.dataset.ready = '1';

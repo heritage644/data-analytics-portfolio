@@ -1,24 +1,25 @@
 ---
 import { person, copy, coreTools } from '../data/portfolio';
-import { hasAsset, local } from '../lib/paths';
+import { Image } from 'astro:assets';
+import { imageSource } from '../lib/images';
 import DataSculpture from './DataSculpture.astro';
 import ToolBadge from './ToolBadge.astro';
 import Icon from './Icon.astro';
-const hasPortrait = hasAsset(person.headshot);
 ---
 <section class="hero hero--split portfolio-hero" id="overview" data-enter aria-labelledby="hero-title">
   <div class="wrap">
     <div class="hero-text hero__grid grid">
       <div class="hero__text span-6">
         <div class="hero__kicker">
-          <!-- TODO: Add Raphael's own portrait at public/headshot.webp. Never substitute a stock portrait. -->
-          <span class="portrait" title={hasPortrait ? undefined : copy.ui.headshotSlot}>{hasPortrait ? <img src={local(person.headshot)} width="40" height="40" alt={person.name} /> : <span role="img" aria-label={copy.ui.headshotSlot}>{person.initials}</span>}</span>
+          <span class="portrait"><Image src={imageSource(person.headshot)} alt={person.portraitAlt}
+            width={96} height={116} widths={[48,64,96,128,192]} sizes="(max-width:639px) 44px, 64px"
+            format="webp" quality={88} loading="eager" fetchpriority="high" /></span>
           {copy.greeting}
         </div>
         <h1 id="hero-title" data-enter-whole>{copy.headline[0]}{' '}<br />{copy.headline[1]}<span class="accent-word">{copy.headline[2]}</span></h1>
         <p class="hero__lead">{copy.lead}</p>
         <div class="btn-row"><a class="btn btn--primary" href="#projects">{copy.primary}<Icon name="arrow-down-right" /></a><a class="btn btn--secondary" href="#contact">{copy.connect}<Icon name="arrow-up-right" /></a></div>
-        <div class="tools-row hero-tools" aria-label={copy.toolkit}><span class="tool-label mono">{copy.toolkit}</span>{coreTools.map(t=><ToolBadge name={t.name} eager />)}</div>
+        <div class="tools-row hero-tools" aria-label={copy.toolkit}><span class="tool-label mono">{copy.toolkit}</span>{coreTools.map(t=><ToolBadge name={t.name} />)}</div>
       </div>
       <div class="hero__media workspace span-6 start-7" data-visual role="img" aria-label={copy.illustrationAlt}>
         <div class="workspace-top" aria-hidden="true"><span><Icon name="panel-top" />{copy.workspace}</span><span class="mono"><span class="study-type">{copy.study}</span><span class="fig-id">{copy.figure}</span></span></div>
@@ -35,9 +36,8 @@ const hasPortrait = hasAsset(person.headshot);
   .portfolio-hero .hero-text.hero__grid { height: auto; flex: 1 1 0; min-height: 0; align-content: start; grid-template-rows: auto; }
   .portfolio-hero .hero__text { padding-block: 0; }
   .portfolio-hero .hero__kicker { font-size: var(--t-body); gap: var(--s-3); color: var(--ink); }
-  .portrait { position: relative; flex: none; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--paper); border: 1px solid var(--line-strong); }
-  .portrait > span { display: grid; place-items: center; width: 30px; height: 30px; border: 1px dashed var(--draft-line); border-radius: 50%; color: var(--muted); font: 500 var(--t-label)/1 var(--font-text); letter-spacing: -.06em; }
-  .portrait img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+  .portrait { display:block; flex:none; width:64px; height:64px; padding:2px; border-radius:50%; background:var(--chip); border:1px solid var(--focus); }
+  .portrait img { display:block; width:100%; height:100%; border-radius:50%; object-fit:cover; object-position:50% 40%; }
   .portfolio-hero h1 { font-size: clamp(52px,5.1vw,80px); line-height: 1.00; text-wrap: initial; }
   .portfolio-hero .hero__text > .hero__kicker + h1 { margin-top: var(--s-6); }
   .accent-word { color: var(--accent); }
@@ -45,6 +45,7 @@ const hasPortrait = hasAsset(person.headshot);
   .hero-tools { margin-top: var(--s-7); border-top: 1px solid var(--line-strong); padding-top: var(--s-5); }
   .hero-tools .tool-label { margin-right: var(--s-2); color: var(--muted); }
   .hero--split .workspace { height: clamp(420px,59svh,600px); min-height: 0; display: flex; flex-flow: column; align-self: start; background: var(--drawing-bg); border: 1px solid var(--draft-line); color: var(--drawing-label); }
+  .workspace,.drawing-space::before,.sculpture { pointer-events:none; }
   .workspace-top,.workspace-bottom { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; padding: var(--s-4) var(--s-5); }
   .workspace-top { border-bottom: 1px solid var(--draft-grid); }
   .workspace-top > span,.workspace-bottom > span { display: inline-flex; align-items: center; gap: var(--s-2); }
@@ -57,7 +58,7 @@ const hasPortrait = hasAsset(person.headshot);
   .mini-cross { position: relative; width: 10px; height: 10px; display: inline-block; }
   .mini-cross::before,.mini-cross::after { position: absolute; content: ''; background: currentColor; }
   .mini-cross::before { width: 100%; height: 1px; top: 50%; }.mini-cross::after { height: 100%; width: 1px; left: 50%; }
-  .workspace-bottom .ink-key { gap: 3px; }.ink-key i { display: block; width: 11px; height: 11px; background: var(--sheet); border: 1px solid var(--draft-line); }.ink-key i:nth-child(2){background: var(--blue-tint)}.ink-key i:nth-child(3){background: var(--blue-top)}.ink-key i:nth-child(4){background: var(--blue)}.ink-key i:nth-child(5){background: var(--draft-ink)}
+  .workspace-bottom .ink-key { gap: 3px; }.ink-key i { display: block; width: 11px; height: 11px; background: var(--sheet); border: 1px solid var(--draft-line); }.ink-key i:nth-child(2){background: var(--chart-tint)}.ink-key i:nth-child(3){background: var(--chart-top)}.ink-key i:nth-child(4){background: var(--red)}.ink-key i:nth-child(5){background: var(--draft-ink)}
   .folio-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); padding-top: var(--s-3); border-top: 1px solid var(--line-strong); font-size: var(--t-small); color: var(--muted); }
   .folio-foot > * { display: inline-flex; align-items: center; gap: var(--s-2); }
   .folio-foot .edu-short { display:none; }
@@ -78,19 +79,26 @@ const hasPortrait = hasAsset(person.headshot);
     main > .portfolio-hero { --hgap: 24px; --hpadb: 24px; min-height: max(740px,100svh); }
     .portfolio-hero h1 { font-size: clamp(42px,11.5vw,62px); }
     .portfolio-hero .hero__kicker { font-size: var(--t-small); }
-    .portrait { width: 32px; height: 32px; }.portrait > span { width: 25px; height: 25px; }
+    .portrait { width:44px; height:44px; }
     .portfolio-hero .hero__lead { line-height: 1.54; }
     .portfolio-hero .hero__text > .btn-row { gap: var(--s-2); flex-direction: row; }
     .portfolio-hero .btn-row .btn { width: auto; flex: 1; padding-inline: var(--s-2); font-size: var(--t-small); }
     .hero-tools { margin-top: var(--s-4); }.hero-tools .tool-label { display: none; }
     .workspace-top, .workspace-bottom { padding: 8px 14px; }
     .workspace-top > span:first-child { font-size: var(--t-label); }
-    .hero--split .workspace { min-height: 202px; }
+    .portfolio-hero .hero-text.hero__grid { flex:1 0 auto; }
+    .hero--split .workspace { height:auto; min-height:180px; margin-block-start:var(--s-4); }
     .folio-foot .edu-long {display:none;}.folio-foot .edu-short {display:inline;}.folio-foot {flex:none;}
     .folio-foot { align-items: center; font-size: var(--t-label); padding-top: var(--s-2); }
     .folio-foot span { max-width: 30ch; line-height: 1.4; }
     .folio-foot a { width: 44px; justify-content: center; flex-shrink: 0; }
     .folio-foot a .ui-icon { width: 18px; height: 18px; }
+  }
+  @media(max-width:379px) {
+    main > .portfolio-hero {--hgap:var(--s-4); --hpadb:var(--s-4);}
+    .portfolio-hero .hero__text > .btn-row {margin-top:var(--s-4);}
+    .hero-tools {margin-top:var(--s-3);}
+    .hero--split .workspace {min-height:168px;}
   }
   @media (min-width: 1024px) and (max-height: 740px) { main > .portfolio-hero { --hgap: 32px; min-height: 660px; }.hero-tools { margin-top: var(--s-5); padding-top: var(--s-4); }.portfolio-hero h1 { font-size: clamp(49px,5vw,68px); } }
   .plate-ruler { width:56px;height:9px;background:repeating-linear-gradient(90deg,var(--draft-line) 0 1px,transparent 1px 6px);border-bottom:1px solid var(--draft-line); }
