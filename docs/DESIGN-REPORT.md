@@ -4,6 +4,8 @@ GATE: ERROR (consistency.mjs gave no report (exit 1: Error: Chrome exited early 
 
 **Revision 1:** The production build, lint/type checks, unit tests, browser regressions, axe checks and performance check passed. The separate design-skill gate is **incomplete**, not a pass: its Chromium consistency process exited before producing a report. The gate’s layout and copy checks did run; the mobile catalog-height waiver applied, and there were two copy advisories. The gate was not rerun, per its instructions. The original release’s gate result does not stand in for this revision.
 
+**Current navigation and appearance:** The top bar and mobile menu have since been removed. The hero actions, footer section links, keyboard skip link and study return links remain. Light and dark colours now follow the device setting using CSS and media-specific browser theme colours, without a toggle or saved preference. Browser tests at 360, 768 and 1440px verified changes while the page was open, including when a conflicting preference from the old site was present. The phone-width no-JavaScript check also switched themes. The revision 1 header measurements below describe the earlier release.
+
 ## Design decisions
 
 **Kind:** service portfolio, not analytics software for sale. The audience is a hiring manager or business owner; **View projects** is the main action. **Voice:** Raphael speaks in the first person about independent work; each case study distinguishes the questions asked from any results not supplied.
@@ -11,7 +13,7 @@ GATE: ERROR (consistency.mjs gave no report (exit 1: Error: Chrome exited early 
 | Surface | Skill rule in use |
 |---|---|
 | Shared system | The client’s **red and white** palette replaces the original palette deal. White and neutral surfaces frame the work; red marks actions, active states, focus and decorative chart highlights. Self-hosted **Schibsted Grotesk**, soft radii, tonal buttons, shared spacing tokens and aligned page edges carry through to the study pages. |
-| Navigation and hero | The initial mark, `nav-mega` pattern and split hero put Raphael's name, work and two next actions on the first screen. The number-free dashboard drawing combines columns, a line, a ring and blank KPI tiles. The supplied portrait is eagerly loaded in a circular, red-ringed frame. |
+| Hero | The page opens directly on the split hero, with Raphael's name, work and two next actions on the first screen. The number-free dashboard drawing combines columns, a line, a ring and blank KPI tiles. The supplied portrait is eagerly loaded in a circular, red-ringed frame. |
 | About and skills | A single dealt `word-highlight` moment uses Raphael's own statement. The three counts come from the catalog; screen readers get the final numbers, not animation frames. One contrasting `dark-band` groups the two skill inventories with icons rather than proficiency scores. |
 | Catalog and detail | Consistent fields make the six studies comparable; a real dashboard screenshot identifies each one. ICT keeps an **In progress** badge and **Planned** areas. The same article and enlargeable gallery serve the keyboard-accessible dialog and its permanent URL. |
 | Contact and footer | A `close-type` closing section uses the supplied invitation and an explicit Fiverr hiring action. The column footer repeats the real social destinations, not a form or a fabricated address. |
@@ -40,7 +42,7 @@ Two **copy-lint** warnings were kept: `copy-stat-strip` is the requested, data-d
 - **Final colour and status audit:** searched project sources, configuration, utilities, SVGs, theme metadata, generated styles/assets and built pages for old palette values, colour names, cool hex/RGB/HSL-family colours and header status variants. None remain in the shipped interface. The intact third-party skill contains unused example palettes; only the filtered system sheet and neutral versions of the used marks are shipped. No owner photograph or dashboard was recoloured.
 - **Measured contrast:** the primary button rendered white text on the specified default, hover and pressed reds: **4.83:1**, **6.47:1** and **8.31:1**. Body links are **6.47:1** on white; dark links are **8.38:1** on the page and **7.71:1** on the raised surface. Tool labels on the light and dark tints are **5.91:1** and **7.05:1**, respectively.
 
-## Checks on the local static build
+## Revision 1 checks on the local static build
 
 | Check | Result |
 |---|---|

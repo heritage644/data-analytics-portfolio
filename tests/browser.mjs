@@ -16,23 +16,31 @@ async function audit(page,where) {
   const violations=await page.evaluate(async()=> (await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}})).violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>({target:n.target,msg:n.failureSummary}))})));
   for(const v of violations) problems.push({where,...v});
 }
+async function checkSystemTheme(page, scheme) {
+  // Inspect the painted page and the browser chrome hint, not a JS class or saved preference.
+  const {background, ink, chrome, expectedBackground, expectedInk} = await page.evaluate(scheme => {
+    const root = getComputedStyle(document.documentElement), body = getComputedStyle(document.body);
+    const matching = [...document.querySelectorAll('meta[name="theme-color"]')].find(meta => matchMedia(meta.media).matches);
+    const rgb = value => { const style = document.createElement('span').style; style.color = value; return style.color; };
+    return {
+      background: body.backgroundColor, ink: body.color, chrome: rgb(matching?.content ?? ''),
+      expectedBackground: rgb(root.getPropertyValue(scheme === 'dark' ? '--night' : '--white')),
+      expectedInk: rgb(root.getPropertyValue(scheme === 'dark' ? '--mist' : '--charcoal')),
+    };
+  },scheme);
+  assert.deepEqual([background,ink,chrome], [expectedBackground,expectedInk,expectedBackground],`${scheme} system colours`);
+  assert.equal(await page.locator('header.nav, .nav__toggle, .theme-control').count(),0);
+}
 async function checkLanding(page,id) {
   await page.waitForFunction(id=>{
-    const heading = document.getElementById(id), header = document.querySelector('header.nav').getBoundingClientRect();
+    const heading = document.getElementById(id);
     const r = heading.getBoundingClientRect();
-    return location.hash === `#${id}` && document.activeElement === heading && Math.abs(r.top-header.bottom-16)<2 && r.bottom<=innerHeight;
+    return location.hash === `#${id}` && document.activeElement === heading && Math.abs(r.top-16)<2 && r.bottom<=innerHeight;
   },id,{timeout:5000});
   assert.equal(await page.locator(`#${id}`).count(),1);
 }
-async function checkHeroLinks(page, viaMenu = false) {
+async function checkHeroLinks(page) {
   for (const id of ['projects','contact','about']) {
-    // Previously, visiting a destination via the mobile menu changed its offset
-    // on the next hero click. Seed the same destination, including contact at EOF.
-    if (viaMenu) {
-      await page.locator('.nav__toggle').click(); await page.locator(`.nav__link[href="#${id}"]`).click();
-      assert.equal(await page.locator('main').evaluate(e=>e.inert),false);
-      await checkLanding(page,id);
-    }
     for (const method of ['pointer','keyboard']) {
       await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
       await page.waitForFunction(()=>scrollY === 0);
@@ -62,13 +70,19 @@ async function checkViewer(page,link,view,auditLabel,method='keyboard') {
 }
 try {
  for(const [width,height] of [[360,800],[768,1024],[1440,900]]) for(const scheme of ['light','dark']) {
-  const ctx=await browser.newContext({viewport:{width,height},colorScheme:scheme,reducedMotion:width===1440?'no-preference':'reduce'});
+  const opposite = scheme === 'dark' ? 'light' : 'dark';
+  const ctx=await browser.newContext({viewport:{width,height},colorScheme:scheme,reducedMotion:width===1440?'no-preference':'reduce',
+    // A manual choice left by the old site must no longer override the phone.
+    storageState:{cookies:[],origins:[{origin:new URL(base).origin,localStorage:[{name:'ra-theme',value:opposite}]}]},
+  });
   const p=await ctx.newPage();
   p.on('pageerror',e=>problems.push({where:'Page exception',message:e.message}));
   p.on('console',m=>{if(['warning','error'].includes(m.type())) problems.push({where:`${width} ${scheme} browser console (${p.url()})`,message:m.text()});});
   p.on('response',r=>{if(r.url().startsWith(base)&&r.status()>=400)problems.push({where:'HTTP error',message:`${r.status()} ${r.url()}`});});
   await p.goto(base,{waitUntil:'networkidle'});
-  assert.equal(await p.locator('html').getAttribute('data-theme'),scheme);
+  await checkSystemTheme(p,scheme);
+  await p.emulateMedia({colorScheme:opposite}); await checkSystemTheme(p,opposite);
+  await p.emulateMedia({colorScheme:scheme}); await checkSystemTheme(p,scheme);
   assert.equal(await p.locator('h1').count(),1);
   assert.ok(await p.locator('.scroll-cue svg').evaluate(el=>el.getBoundingClientRect().width>=12),'Visible scroll cue');
   assert.equal(await p.locator('.project-card').count(),projects.length);
@@ -94,13 +108,7 @@ try {
     const overflow=await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth);assert.equal(overflow,false,`${width} ${scheme} ${id} overflows`);
   }
   await audit(p,`${width} ${scheme} home`);
-  const theme=p.locator('.theme-control');await theme.click();await p.reload({waitUntil:'networkidle'});
-  assert.equal(await theme.getAttribute('aria-checked'),String(scheme==='light'));await theme.click();
-  if(width<1024) {
-    await p.getByRole('button',{name:'Navigation menu'}).click();assert.equal(await p.locator('main').evaluate(e=>e.inert),true);
-    await p.keyboard.press('Escape');assert.equal(await p.locator('.nav__toggle').getAttribute('aria-expanded'),'false');
-  }
-  await checkHeroLinks(p,width<1024);
+  await checkHeroLinks(p);
   for(const [filter,count] of Object.entries(counts)) {
     const button=p.getByRole('button',{name:filter,exact:true});
     if (filter==='HR') { await button.focus(); await p.keyboard.press('Space'); } else await button.click();
@@ -135,13 +143,17 @@ try {
   }
   for(const a of await p.locator('.social-link').all()){assert.equal(await a.getAttribute('target'),'_blank');assert.equal(await a.getAttribute('rel'),'noopener noreferrer');}
   await p.goto(new URL('projects/healthcare-operations/',base).href,{waitUntil:'networkidle'});assert.equal(await p.locator('h1').count(),1);
+  await checkSystemTheme(p,scheme);
   await audit(p,`${width} ${scheme} standalone study`);
   await checkViewer(p,p.locator('.gallery-view').first(),projects.find(x=>x.industry==='Healthcare').image,null,'pointer');
-  console.log(`Checked ${width}×${height}, ${scheme}: sections, repeated pointer/keyboard hero jumps, responsive images, lightboxes, theme persistence, ${filters.length} filters, ${projects.length} dialogs, focus return, static study and axe.`);
+  await p.goto(new URL('404.html',base).href); await checkSystemTheme(p,scheme);
+  console.log(`Checked ${width}×${height}, ${scheme}: sections, repeated pointer/keyboard hero jumps, responsive images, lightboxes, live system appearance, ${filters.length} filters, ${projects.length} dialogs, focus return, static study and axe.`);
   await ctx.close();
  }
  const ctx=await browser.newContext({javaScriptEnabled:false,colorScheme:'dark',reducedMotion:'reduce',viewport:{width:360,height:800}});
- const page=await ctx.newPage();await page.goto(base); await checkHeroLinks(page);
+ const page=await ctx.newPage();await page.goto(base); await checkSystemTheme(page,'dark');
+ await page.emulateMedia({colorScheme:'light'}); await checkSystemTheme(page,'light');
+ await checkHeroLinks(page);
  await page.locator('[data-study-link]').first().click();assert.match(await page.locator('h1').innerText(),/Sales Performance/);
  await page.locator('.gallery-view').first().click();assert.match(page.url(),/\.webp$/);await ctx.close();
 } finally {await browser.close();}

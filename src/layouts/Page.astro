@@ -2,7 +2,6 @@
 import { copy, person, profiles } from '../data/portfolio';
 import { swatch } from '../lib/brand';
 import { local } from '../lib/paths';
-import Header from '../components/Header.astro';
 import '../styles/base.css';
 interface Props { title?: string; description?: string; home?: boolean; noindex?: boolean }
 const { title = copy.siteTitle, description = copy.description, home = false, noindex = false } = Astro.props;
@@ -39,9 +38,6 @@ const schema = { '@context': 'https://schema.org', '@type': 'Person', name: pers
     <script is:inline>
       (() => {
         const root = document.documentElement;
-        let choice;
-        try { choice = localStorage.getItem('ra-theme'); } catch { /* Storage is optional. */ }
-        root.dataset.theme = choice === 'light' || choice === 'dark' ? choice : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         root.classList.add('m-enter','mo-js');
         setTimeout(() => root.classList.add('m-enter-done'), 700);
         setTimeout(() => root.classList.add('mo-safe'), 2500);
@@ -50,8 +46,8 @@ const schema = { '@context': 'https://schema.org', '@type': 'Person', name: pers
     <slot name="head" />
   </head>
   <body>
-    <!-- Service / independent data analysis. Client red / white, Schibsted Grotesk, split, nav-mega, dark-band, tonal, initial, word-highlight, close-type, footer-columns. No stock material, shaders or invented data. -->
-    <Header home={home} />
+    <!-- Service / independent data analysis. Client red / white, Schibsted Grotesk, split, dark-band, tonal, initial, word-highlight, close-type, footer-columns. No stock material, shaders or invented data. -->
+    <a class="skip-link" href="#top">{copy.ui.skip}</a>
     <slot />
     {/* Standalone kit modules: native lazy-loading stays in effect, including dashboard screenshots. */}
     <script is:inline type="module" define:vars={{momentLoader:home ? local('assets/moments/moments.js') : null}}>
@@ -59,6 +55,5 @@ const schema = { '@context': 'https://schema.org', '@type': 'Person', name: pers
       document.documentElement.dataset.ready = '1';
     </script>
     <script is:inline type="module" src={local('assets/motion/motion.js')}></script>
-    <script src="../lib/navigation.ts"></script>
   </body>
 </html>

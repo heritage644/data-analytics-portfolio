@@ -31,9 +31,14 @@ const fiverr = profiles.find(p=>p.icon==='fiverr')!;
     </div>
   </div>
 </footer>
+<script>
+  // Keep the copyright current between static builds.
+  const year = document.querySelector('[data-year]');
+  if (year) year.textContent = String(new Date().getFullYear());
+</script>
 <style is:global>
 footer.contact-section,footer.compact-footer { background: var(--paper); }
-footer.contact-section { --padt:calc(var(--nav) + var(--s-4)); }
+footer.contact-section { --padt:var(--s-4); }
 footer.contact-section > .wrap { row-gap: var(--s-7); }
 .contact-section .closing__cta { gap: var(--s-7); }
 .contact-body { align-items: start; }
@@ -46,6 +51,7 @@ footer.contact-section > .wrap { row-gap: var(--s-7); }
 .footer .closing__links { display: grid; gap: var(--s-5); }
 .footer-top { padding-top: var(--s-6); }
 .footer .footer-brand { display: inline-flex; align-items: center; gap: var(--s-3); }
+.footer-brand .mark.mark--initial { width: 42px; height: 42px; font-weight: 600; font-size: 21px; letter-spacing: -.1em; padding-right: 2px; }
 .footer-nav,.footer-socials { display: flex; flex-wrap:wrap; align-items: center; gap: var(--s-5); }
 .footer-socials { gap: var(--s-2); }
 .footer-nav a,.legal-row a { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--t-small); }
